@@ -5,7 +5,7 @@ Face Image Compression Application
 ## Structure
 
 - algorithm
-- data
+- dataset
   - train
   - test
 - save
