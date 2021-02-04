@@ -4,7 +4,7 @@ import multiprocessing as mp
 from facenet_pytorch import InceptionResnetV1
 from torch.utils.data import DataLoader
 from dataset import dataset
-from reconstruction1 import Dconv
+from DeepRcon import DRcon
 from perceptual_loss import Perc
 from torch.optim.lr_scheduler import ExponentialLR
 
@@ -30,19 +30,19 @@ if __name__ == '__main__':
         shuffle=True,
         drop_last=True,
         pin_memory=True,
-        collate_fn=dataset.collate
+        # collate_fn=dataset.collate
     )
 
-    model = Dconv()
+    model = DRcon()
     model = model.cuda()
     model = torch.nn.DataParallel(model, list(range(gpu_num)))
 
     criterion = torch.nn.L1Loss()
+    # perceptual loss
+    perc = Perc()
+    perc = perc.cuda()
     optimizer = optim.Adam(model.parameters(), lr=0.01)
     scheduler = ExponentialLR(optimizer, gamma=0.9125)
-    # perceptual loss
-    perc = Perc(optimizer)
-    perc = perc.cuda()
 
     loss = 0
     for epoch in range(0, 50):

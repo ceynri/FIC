@@ -1,9 +1,6 @@
-
 import torch.nn as nn
+from GDN import GDN
 
-import torch
-import math
-from GDN import GDN 
 
 class Synthesis(nn.Module):
     '''
