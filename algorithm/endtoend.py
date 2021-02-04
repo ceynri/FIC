@@ -1,17 +1,6 @@
-import numpy as np
-import os
 import torch
-import torchvision.models as models
-from torch.autograd import Variable
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.data import DataLoader
-import sys
 import math
-import torch.nn.init as init
-import logging
-from torch.nn.parameter import Parameter
 from analysis import Analysis
 from synthesis import Synthesis
 from bit_estimate import BitEstimator
@@ -31,7 +20,7 @@ class ImageCompressor(nn.Module):
         quant_noise_feature = torch.zeros(input_image.size(0), self.out_channel_N, input_image.size(2) // 16, input_image.size(3) // 16).cuda()      
         quant_noise_feature = torch.nn.init.uniform_(torch.zeros_like(quant_noise_feature), -0.5, 0.5)
         feature = self.Encoder(input_image)
-        batch_size = feature.size()[0]
+        # batch_size = feature.size()[0]
         feature_renorm = feature
 
         # quantization

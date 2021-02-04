@@ -1,14 +1,12 @@
 import torch
-import os
 import numpy as np
 import torch.optim as optim
 import multiprocessing as mp
 from torch.utils.data import DataLoader
 from endtoend import ImageCompressor
 from torch import nn
-from torch.optim.lr_scheduler import ExponentialLR
 from facenet_pytorch import InceptionResnetV1
-from reconstruction1 import Dconv
+from DeepRcon import DRcon
 from dataset import dataset
 
 
@@ -28,7 +26,7 @@ if __name__ == '__main__':
     resnet = nn.DataParallel(resnet, list(range(gpu_num)))
 
     # reconstruct face by feature
-    Base = Dconv().eval()
+    Base = DRcon().eval()
     Base = Base.cuda()
     Base = nn.DataParallel(Base, list(range(gpu_num)))
     param = torch.load('../save/baseLayer.pth')
@@ -37,12 +35,12 @@ if __name__ == '__main__':
     ds = dataset()
     dl = DataLoader(
         dataset = ds,
-        num_workers = 7,
-        batch_size = 128,
+        num_workers = 10,
+        batch_size = 256,
         shuffle = True,
         drop_last = True,
         pin_memory = True,
-        collate_fn = ds.collate
+        # collate_fn = ds.collate
     )
 
     # End-to-End Compression model

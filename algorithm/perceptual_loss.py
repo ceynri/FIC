@@ -3,7 +3,7 @@ from torch import nn
 
 
 class Perc(nn.Module):
-    def __init__(self, opt):
+    def __init__(self):
         super().__init__()
         self.model = VGG19(
             requires_grad=False

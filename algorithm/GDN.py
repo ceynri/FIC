@@ -1,9 +1,6 @@
 import torch
 import torch.utils.data
-from torch import nn, optim
-from torch.nn import functional as F
-from torchvision import datasets, transforms
-from torchvision.utils import save_image
+from torch import nn
 from torch.autograd import Function
 
 
@@ -13,7 +10,7 @@ class LowerBound(Function):
         b = torch.ones_like(inputs) * bound
         ctx.save_for_backward(inputs, b)
         return torch.max(inputs, b)
-        
+
     @staticmethod
     def backward(ctx, grad_output):
         inputs, b = ctx.saved_tensors
@@ -34,7 +31,7 @@ class GDN(nn.Module):
                  inverse=False,
                  beta_min=1e-6,
                  gamma_init=0.1,
-                 reparam_offset=2**-18):
+                 reparam_offset=2 ** -18):
         super(GDN, self).__init__()
         self.inverse = inverse
         self.beta_min = beta_min
@@ -44,17 +41,17 @@ class GDN(nn.Module):
         self.build(ch)
 
     def build(self, ch):
-        self.pedestal = self.reparam_offset**2
-        self.beta_bound = ((self.beta_min + self.reparam_offset**2)**0.5)
+        self.pedestal = self.reparam_offset ** 2
+        self.beta_bound = ((self.beta_min + self.reparam_offset ** 2) ** 0.5)
         self.gamma_bound = self.reparam_offset
 
         # Create beta param
-        beta = torch.sqrt(torch.ones(ch)+self.pedestal)
+        beta = torch.sqrt(torch.ones(ch) + self.pedestal)
         self.beta = nn.Parameter(beta)
 
         # Create gamma param
         eye = torch.eye(ch)
-        g = self.gamma_init*eye
+        g = self.gamma_init * eye
         g = g + self.pedestal
         gamma = torch.sqrt(g)
 
@@ -65,22 +62,22 @@ class GDN(nn.Module):
         unfold = False
         if inputs.dim() == 5:
             unfold = True
-            bs, ch, d, w, h = inputs.size() 
-            inputs = inputs.view(bs, ch, d*w, h)
+            bs, ch, d, w, h = inputs.size()
+            inputs = inputs.view(bs, ch, d * w, h)
 
         _, ch, _, _ = inputs.size()
 
         # Beta bound and reparam
         beta = LowerBound.apply(self.beta, self.beta_bound)
-        beta = beta**2 - self.pedestal
+        beta = beta ** 2 - self.pedestal
 
         # Gamma bound and reparam
         gamma = LowerBound.apply(self.gamma, self.gamma_bound)
-        gamma = gamma**2 - self.pedestal
+        gamma = gamma ** 2 - self.pedestal
         gamma = gamma.view(ch, ch, 1, 1)
 
         # Norm pool calc
-        norm_ = nn.functional.conv2d(inputs**2, gamma, beta)
+        norm_ = nn.functional.conv2d(inputs ** 2, gamma, beta)
         norm_ = torch.sqrt(norm_)
 
         # Apply norm

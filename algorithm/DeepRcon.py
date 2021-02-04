@@ -1,13 +1,12 @@
 from torch import nn
-import torch
 # It is worth mentioning here that 
 # the DconvOP is composed of a series procedures, 
 # including de-convolution layer, batchnormalization layer
 # and ReLU activation (the activation function of the last layer is Tanh).
 
-class Dconv(nn.Module):
+class DRcon(nn.Module):
     def __init__(self):
-        super(Dconv,self).__init__()
+        super(DRcon,self).__init__()
         # DconvOp
         self.DconvOp1 = nn.Sequential(
             nn.ConvTranspose2d(512,512,kernel_size=8,stride=2),
