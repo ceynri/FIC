@@ -1,5 +1,5 @@
 <template>
-  <div class="compress_page">
+  <div class="compression_page">
     <h1 class="title">Compression</h1>
     <div class="comment">Upload facial image to compress</div>
     <div class="upload_area" ref="uploadArea" @click="selectFile">
@@ -66,7 +66,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.compress_page {
+.compression_page {
   margin: 0 auto;
   padding-top: 80px;
   width: 900px;
