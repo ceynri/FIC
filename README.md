@@ -1,6 +1,8 @@
 # FIC
 
-人脸图像压缩应用（Face Image Compression Application）
+Face Image Compression Application
+
+基于深度特征重建的人脸图像压缩应用
 
 参考论文：[Scalable Facial Image Compression with Deep Feature Reconstruction](https://arxiv.org/abs/1903.05921v1)
 
