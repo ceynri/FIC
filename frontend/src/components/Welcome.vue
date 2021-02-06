@@ -8,7 +8,7 @@
           learning.
         </div>
         <div class="btn_container">
-          <router-link class="try_btn" to="compression">Try now!</router-link>
+          <router-link class="try_btn" to="compress">Try now!</router-link>
           <a class="more_btn" href="#">learn more</a>
         </div>
       </section>

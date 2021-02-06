@@ -13,8 +13,8 @@
       <span class="name">FIC</span>
     </router-link>
     <div class="nav_wrapper">
-      <router-link to="compression" class="link">Compress</router-link>
-      <router-link to="decompression" class="link">Decompress</router-link>
+      <router-link to="compress" class="link">Compress</router-link>
+      <router-link to="decompress" class="link">Decompress</router-link>
       <router-link to="about" class="link">About</router-link>
       <a class="link" href="http://github.com/ceynri/FIC">Github</a>
       <button class="switchTheme" @mouseover="isHover = true" @mouseleave="isHover = false">
