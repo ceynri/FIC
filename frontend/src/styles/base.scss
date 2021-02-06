@@ -1,12 +1,20 @@
+@import './var.scss';
+
 body {
   // font-family: Roboto, Noto, Helvetica, Arial, sans-serif;
   font-family: 'Myriad Pro', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
-  min-height: 100%;
-}
+  // min-height: 100%;
 
-html {
-  height: 100%;
-  // font-size: 16px;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  color: var(--text);
+  line-height: 1;
+  background: var(--bg);
+  scroll-behavior: smooth;
+  caret-color: var(--primary);
+  transition: background-color var(--duration) var(--curve);
 }
 
 * {
@@ -16,4 +24,12 @@ html {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+.none {
+  display: none !important;
+}
+
+.clickable {
+  cursor: pointer;
 }

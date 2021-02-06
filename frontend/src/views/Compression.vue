@@ -68,7 +68,7 @@ export default {
 <style lang="scss" scoped>
 .compression_page {
   margin: 0 auto;
-  padding-top: 80px;
+  padding-top: 60px;
   width: 900px;
 
   .title {
@@ -77,14 +77,14 @@ export default {
   }
 
   .comment {
-    color: #949494;
+    color: var(--text2);
     font-size: 20px;
     margin-bottom: 16px;
   }
 
   .upload_area {
-    border: 1px #949494 dotted;
-    border-radius: 8px;
+    border: 1px var(--border2) dotted;
+    border-radius: 4px;
     height: 450px;
 
     .tips {

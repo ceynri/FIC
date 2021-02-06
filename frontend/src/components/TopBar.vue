@@ -20,15 +20,17 @@ export default {};
 </script>
 
 <style lang="scss" scoped>
+$topBarHeight: 80px;
+
 .top_bar {
-  height: 80px;
+  height: $topBarHeight;
   display: flex;
   justify-content: space-between;
 
   box-shadow: #2c2c2c22 0 0 64px;
 
   .logo_wrapper,
-  .right_wrapper {
+  .nav_wrapper {
     display: inline-flex;
   }
 
@@ -36,13 +38,18 @@ export default {};
     align-items: center;
     padding: 0 40px;
 
+    transition: filter var(--duration);
+
+    &:hover {
+      filter: contrast(150%);
+    }
+
     .logo {
-      height: 32px;
       margin-right: 16px;
     }
 
     .name {
-      color: #0052d9;
+      color: var(--primary);
       margin-top: 8px;
       font-size: 32px;
       font-weight: bold;
@@ -50,15 +57,16 @@ export default {};
   }
 
   .link {
-    color: #2c2c2c;
-    width: 120px;
+    color: var(--text);
+    padding: 0 25px;
     display: inline-flex;
-    font-size: 20px;
+    font-size: 16px;
     justify-content: center;
     align-items: center;
+    transition: background-color var(--duration);
 
     &:hover {
-      background-color: #0052d9;
+      background-color: var(--secondary);
       color: #fff;
     }
   }
