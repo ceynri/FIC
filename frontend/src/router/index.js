@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '@/views/Home.vue';
-import Compression from '@/views/Compression.vue';
+import Compress from '@/views/Compress.vue';
 
 Vue.use(VueRouter);
 
@@ -12,9 +12,9 @@ const routes = [
     component: Home,
   },
   {
-    path: '/compression',
-    name: 'Compression',
-    component: Compression,
+    path: '/compress',
+    name: 'Compress',
+    component: Compress,
   },
   {
     path: '/about',
