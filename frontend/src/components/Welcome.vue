@@ -12,13 +12,27 @@
           <a class="more_btn" href="#">learn more</a>
         </div>
       </section>
-      <img class="logo" src="../assets/logo.png" alt="logo" />
+      <IconBase
+        class="logo"
+        icon-name="logo"
+        width="250px"
+        height="250px"
+        :icon-color="cssVars.secondary"
+      >
+        <Favicon />
+      </IconBase>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import Favicon from '@/components/icons/Favicon.vue';
+
+export default {
+  components: {
+    Favicon,
+  },
+};
 </script>
 
 <style lang="scss" scoped>
