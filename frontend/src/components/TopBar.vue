@@ -1,22 +1,51 @@
 <template>
-  <div class="top_bar">
-    <div class="logo_wrapper">
-      <img
+  <nav class="top_bar">
+    <router-link class="logo_wrapper" to="/">
+      <IconBase
         class="logo"
-        src="../assets/logo.png"
-        alt="logo"
-      />
+        icon-name="logo"
+        width="32px"
+        height="32px"
+        :icon-color="cssVars.primary"
+      >
+        <Favicon />
+      </IconBase>
       <span class="name">FIC</span>
+    </router-link>
+    <div class="nav_wrapper">
+      <router-link to="compression" class="link">Compress</router-link>
+      <router-link to="decompression" class="link">Decompress</router-link>
+      <router-link to="about" class="link">About</router-link>
+      <a class="link" href="http://github.com/ceynri/FIC">Github</a>
+      <button class="switchTheme" @mouseover="isHover = true" @mouseleave="isHover = false">
+        <IconBase name="dark theme" width="20" height="20" :icon-color="iconColor">
+          <DarkThemeIcon />
+        </IconBase>
+      </button>
     </div>
-    <div class="right_wrapper">
-      <router-link to="about" class="link about">About</router-link>
-      <a class="link github" href="http://github.com/ceynri/FIC">Github</a>
-    </div>
-  </div>
+  </nav>
 </template>
 
 <script>
-export default {};
+import Favicon from '@/components/icons/Favicon.vue';
+import DarkThemeIcon from '@/components/icons/DarkThemeIcon.vue';
+
+export default {
+  data() {
+    return {
+      isHover: false,
+    };
+  },
+  computed: {
+    iconColor() {
+      return this.isHover ? this.cssVars.bg : this.cssVars.secondary;
+    },
+  },
+  components: {
+    Favicon,
+    DarkThemeIcon,
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -68,6 +97,19 @@ $topBarHeight: 80px;
     &:hover {
       background-color: var(--secondary);
       color: #fff;
+    }
+  }
+
+  .switchTheme {
+    @extend .link;
+    border: none;
+    background-color: #fff;
+    width: $topBarHeight;
+    padding: 0 0 4px;
+    transition: all var(--duration);
+
+    &:hover {
+      background-color: var(--secondary);
     }
   }
 }
