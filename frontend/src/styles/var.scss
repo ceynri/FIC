@@ -1,0 +1,27 @@
+:root {
+  --primary: #0052d9;
+  --secondary: #272727;
+
+  --text: #272727;
+  --text2: #595959;
+
+  --darker: #000;
+
+  --primary-btn-bg: var(--primary);
+  --primary-btn-text: #fff;
+  --btn-bg: #333;
+  --btn-text: #fff;
+  --btn-border: var(--btn-bg);
+
+  --bg: #fff;
+  --bg2: #efefef;
+
+  --border: #ddd;
+  --border2: #888;
+  --border-type: dotted;
+  --border-width: 1px;
+  --standard-border: var(--border-width) var(--border-type) var(--border);
+
+  --curve: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration: 0.12s;
+}
