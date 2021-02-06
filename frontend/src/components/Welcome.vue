@@ -47,12 +47,14 @@ export default {};
     }
 
     .intro {
+      color: var(--text2);
       font-size: 20px;
+      line-height: 1.5;
     }
   }
 
   .btn_container {
-    margin-top: 24px;
+    margin-top: 26px;
 
     .try_btn,
     .more_btn {
@@ -63,19 +65,25 @@ export default {};
       text-align: center;
       font-size: 20px;
       padding: 16px;
+
+      transition: filter var(--duration);
+
+      &:hover {
+        filter: contrast(150%);
+      }
     }
 
     .try_btn {
       border: none;
-      background-color: #0052d9;
+      background-color: var(--primary);
       color: #fff;
       margin-right: 16px;
     }
 
     .more_btn {
-      border: 2px #0052d9 solid;
+      border: 2px var(--primary) solid;
       background-color: #fff;
-      color: #0052d9;
+      color: var(--primary);
       padding: 14px;
     }
   }
