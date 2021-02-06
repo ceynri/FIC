@@ -1,20 +1,13 @@
 <template>
   <div class="compression_page">
-    <h1 class="title">Compression</h1>
+    <h1 class="title">Compressor</h1>
     <div class="comment">Upload facial image to compress</div>
-    <div class="upload_area" ref="uploadArea" @click="selectFile">
+    <div class="upload_area clickable" ref="uploadArea" @click="selectFile">
       <div class="tips">
-        <div>Click here to Select Image to upload</div>
-        <div>or Drag & drop Image here 😊</div>
+        <div>Click here to select image to upload</div>
+        <div>or drag & drop image here 😊</div>
       </div>
-      <input
-        class="none"
-        type="file"
-        accept="image/*"
-        @change="getFile"
-        ref="fileInput"
-        name="files"
-      />
+      <input class="none" type="file" accept="image/*" multiple @change="getFile" ref="fileInput" />
     </div>
   </div>
 </template>
@@ -23,16 +16,8 @@
 export default {
   data() {
     return {
-      fileReader: null,
       fileData: [],
     };
-  },
-  created() {
-    this.fileReader = new FileReader();
-    this.fileReader.addEventListener('load', () => {
-      this.fileData.push(this.fileReader.result);
-      console.log(this.fileData);
-    });
   },
   mounted() {
     const dropArea = this.$refs.uploadArea;
@@ -47,7 +32,12 @@ export default {
     addFiles(files) {
       console.log(files);
       files.forEach((file) => {
-        this.fileReader.readAsDataURL(file);
+        const fileReader = new FileReader();
+        fileReader.addEventListener('load', () => {
+          this.fileData.push(fileReader.result);
+          console.log(this.fileData);
+        });
+        fileReader.readAsDataURL(file);
       });
     },
     getFile(e) {
