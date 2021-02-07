@@ -235,7 +235,12 @@ export default {
 
     background-color: #fff;
     border-radius: $borderRadius;
-    box-shadow: 2px 4px 24px 4px var(--shadow);
+    box-shadow: 2px 4px 32px -4px var(--shadow);
+    transition: box-shadow var(--duration);
+
+    &:hover {
+      box-shadow: 2px 4px 28px 4px var(--shadow);
+    }
 
     .image_item {
       $height: 100px;

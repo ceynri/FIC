@@ -83,8 +83,7 @@ export default {
       transition: filter var(--duration), box-shadow var(--duration);
 
       &:hover {
-        filter: contrast(150%);
-        box-shadow: 2px 4px 16px 4px var(--shadow);
+        filter: contrast(150%) drop-shadow(2px 4px 16px var(--shadow));
       }
     }
 
@@ -97,7 +96,7 @@ export default {
 
     .more_btn {
       border: 2px var(--primary) solid;
-      background-color: #fff;
+      background-color: initial;
       color: var(--primary);
       padding: 14px;
     }
