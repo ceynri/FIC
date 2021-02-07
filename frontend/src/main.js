@@ -1,5 +1,6 @@
 import Vue from 'vue';
 
+import OverlayScrollbars from 'overlayscrollbars';
 import 'overlayscrollbars/css/OverlayScrollbars.css';
 import { OverlayScrollbarsPlugin, OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
 import IconBase from '@/components/IconBase.vue';
@@ -22,3 +23,9 @@ new Vue({
   store,
   render: (h) => h(App),
 }).$mount('#app');
+
+OverlayScrollbars(document.body, {
+  nativeScrollbarsOverlaid: {
+    initialize: false,
+  },
+});
