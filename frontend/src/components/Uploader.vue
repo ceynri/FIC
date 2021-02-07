@@ -226,7 +226,7 @@ export default {
 
   .image_list {
     width: 100%;
-    max-height: 1000px;
+    max-height: 550px;
     overflow-y: auto;
     padding: 0 15px;
 
