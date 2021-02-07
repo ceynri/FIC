@@ -17,7 +17,13 @@
       </div>
     </overlay-scrollbars>
     <form class="upload_area clickable" ref="uploadArea" @click="selectFiles">
-      <IconBase class="add" width="160px" height="160px" name="add" v-if="dragOver">
+      <IconBase
+        class="add"
+        :width="isAdded ? 80 : 160"
+        :height="isAdded ? 80 : 160"
+        name="add"
+        v-if="dragOver"
+      >
         <AddIcon />
       </IconBase>
       <div class="tips" v-else-if="!isAdded">
