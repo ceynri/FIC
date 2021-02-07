@@ -1,7 +1,9 @@
 <template>
-  <div class="compression_page">
-    <h1 class="title">Compressor</h1>
-    <div class="comment">Upload facial image to compress</div>
+  <section class="compression_page">
+    <header class="title_wrapper">
+      <h1 class="title">Compressor</h1>
+      <div class="comment">Upload facial image to compress</div>
+    </header>
     <div class="container">
       <overlay-scrollbars class="image_list" v-if="isAdded">
         <div class="image_card" v-for="(item, i) in fileData" :key="i">
@@ -32,7 +34,7 @@
         />
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -107,7 +109,7 @@ export default {
   }
 
   .container {
-    $borderRadius: 4px;
+    $borderRadius: 8px;
 
     height: 450px;
     width: 100%;
@@ -128,13 +130,24 @@ export default {
 
       border: var(--standard-border);
       border-radius: $borderRadius;
+      transition: border var(--duration);
+
+      &:hover {
+        border-color: var(--border2);
+
+        .tips {
+          opacity: 0.4;
+        }
+      }
 
       .tips {
         font-size: 32px;
         opacity: 0.3;
+        transition: opacity var(--duration);
 
         .tips_line {
-          margin-bottom: 12px;
+          margin-bottom: 0.5em;
+          text-align: center;
         }
       }
     }
@@ -155,7 +168,7 @@ export default {
 
       background-color: #fff;
       border-radius: $borderRadius;
-      box-shadow: 2px 4px 24px var(--shadow);
+      box-shadow: 2px 4px 24px 4px var(--shadow);
 
       .image_card {
         height: 100px;
