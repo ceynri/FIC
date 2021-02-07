@@ -42,5 +42,7 @@ svg {
   display: inline-block;
   vertical-align: baseline;
   margin-bottom: -2px; /* yes, I'm that particular about formatting */
+
+  pointer-events: none;
 }
 </style>

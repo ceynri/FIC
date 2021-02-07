@@ -8,8 +8,8 @@
         </div>
         <div class="image_name">{{ item.name }}</div>
         <div class="icon_wrapper">
-          <button class="cancelBtn" @click="deleteFile(i)">
-            <IconBase class="cancel clickable" width="20px" height="20px" name="cancel">
+          <button class="cancelBtn clickable" @click="deleteFile(i)">
+            <IconBase class="cancel" width="20px" height="20px" name="cancel">
               <CancelIcon />
             </IconBase>
           </button>
