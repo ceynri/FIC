@@ -25,8 +25,8 @@
       <input
         class="none"
         type="file"
-        accept="image/*"
-        multiple
+        :accept="accept"
+        :multiple="multiple"
         @change="getFiles"
         ref="fileInput"
       />
@@ -38,6 +38,16 @@
 import CancelIcon from '@/components/icons/CancelIcon.vue';
 
 export default {
+  props: {
+    accept: {
+      type: String,
+      default: '*',
+    },
+    multiple: {
+      type: Boolean,
+      default: true,
+    },
+  },
   data() {
     return {
       fileData: [],
