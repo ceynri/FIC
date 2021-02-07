@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="uploader">
     <div class="container_border"></div>
     <overlay-scrollbars class="image_list" v-if="isAdded">
       <div class="image_item" v-for="(item, i) in fileData" :key="item.name">
@@ -16,8 +16,11 @@
         </div>
       </div>
     </overlay-scrollbars>
-    <div class="upload_area clickable" ref="uploadArea" @click="selectFiles">
-      <div class="tips" v-if="!isAdded">
+    <form class="upload_area clickable" ref="uploadArea" @click="selectFiles">
+      <IconBase class="add" width="160px" height="160px" name="add" v-if="dragOver">
+        <AddIcon />
+      </IconBase>
+      <div class="tips" v-else-if="!isAdded">
         <div class="tips_line">Click here to select image to upload</div>
         <div class="tips_line">or drag & drop image here 😊</div>
       </div>
@@ -30,12 +33,13 @@
         @change="getFiles"
         ref="fileInput"
       />
-    </div>
+    </form>
   </div>
 </template>
 
 <script>
 import CancelIcon from '@/components/icons/CancelIcon.vue';
+import AddIcon from '@/components/icons/AddIcon.vue';
 
 export default {
   props: {
@@ -52,6 +56,7 @@ export default {
     return {
       fileData: [],
       fileNameSet: new Set(),
+      dragOver: false,
     };
   },
   computed: {
@@ -60,12 +65,33 @@ export default {
     },
   },
   mounted() {
-    const dropArea = this.$refs.uploadArea;
-    dropArea.addEventListener('drop', this.dropEvent);
-    dropArea.addEventListener('dragenter', this.preventFn);
-    dropArea.addEventListener('dragover', this.preventFn);
+    this.bindDragEvent();
   },
   methods: {
+    /**
+     * 监听uploadArea的拖拽事件
+     */
+    bindDragEvent() {
+      const dropArea = this.$refs.uploadArea;
+      if (!dropArea) {
+        return;
+      }
+      dropArea.addEventListener('drop', (e) => {
+        this.dragOver = false;
+        this.dropEvent(e);
+      });
+      dropArea.addEventListener('dragenter', (e) => {
+        this.preventFn(e);
+        this.dragOver = true;
+      });
+      dropArea.addEventListener('dragover', (e) => {
+        this.preventFn(e);
+      });
+      dropArea.addEventListener('dragleave', (e) => {
+        this.preventFn(e);
+        this.dragOver = false;
+      });
+    },
     /**
      * 封装fileInput的点击事件
      */
@@ -126,12 +152,15 @@ export default {
       e.preventDefault();
     },
   },
-  components: { CancelIcon },
+  components: {
+    CancelIcon,
+    AddIcon,
+  },
 };
 </script>
 
 <style lang="scss" scoped>
-.container {
+.uploader {
   $borderRadius: 8px;
 
   min-height: 450px;
@@ -172,6 +201,10 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    .add {
+      opacity: 0.3;
+    }
 
     .tips {
       font-size: 32px;
