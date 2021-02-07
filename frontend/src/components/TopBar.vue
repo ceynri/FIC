@@ -56,7 +56,7 @@ $topBarHeight: 80px;
   display: flex;
   justify-content: space-between;
 
-  box-shadow: #2c2c2c22 0 0 64px;
+  box-shadow: 0 0 64px var(--shadow);
 
   .logo_wrapper,
   .nav_wrapper {
