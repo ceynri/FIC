@@ -1,10 +1,10 @@
 <template>
-  <section class="compression_page">
+  <section class="compressor">
     <header class="title_wrapper">
       <h1 class="title">Compressor</h1>
-      <div class="comment">Upload facial image to compress</div>
+      <div class="comment">Upload facial images to compress</div>
     </header>
-    <Uploader />
+    <Uploader accept="image/*" />
   </section>
 </template>
 
@@ -17,12 +17,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.compression_page {
+.compressor {
   margin: 0 auto;
   padding: 60px 0;
   width: 900px;
 
   .title {
+    font-size: 32px;
     margin: 0;
     margin-bottom: 8px;
   }
