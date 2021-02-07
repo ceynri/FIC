@@ -17,7 +17,12 @@
       <router-link to="decompress" class="link">Decompress</router-link>
       <router-link to="about" class="link">About</router-link>
       <a class="link" href="http://github.com/ceynri/FIC">Github</a>
-      <button class="switchTheme" @mouseover="isHover = true" @mouseleave="isHover = false">
+      <button
+        class="switchThemeBtn clickable"
+        @mouseover="isHover = true"
+        @mouseleave="isHover = false"
+        @click="switchTheme"
+      >
         <IconBase name="dark theme" width="20" height="20" :icon-color="iconColor">
           <DarkThemeIcon />
         </IconBase>
@@ -41,6 +46,15 @@ export default {
       return this.isHover ? this.cssVars.bg : this.cssVars.secondary;
     },
   },
+  methods: {
+    /**
+     * 切换主题
+     * @TODO 暂定功能，可换为github按钮
+     */
+    switchTheme() {
+      alert('todo');
+    },
+  },
   components: {
     Favicon,
     DarkThemeIcon,
@@ -56,7 +70,7 @@ $topBarHeight: 80px;
   display: flex;
   justify-content: space-between;
 
-  box-shadow: #2c2c2c22 0 0 64px;
+  box-shadow: 0 0 64px var(--shadow);
 
   .logo_wrapper,
   .nav_wrapper {
@@ -100,10 +114,9 @@ $topBarHeight: 80px;
     }
   }
 
-  .switchTheme {
+  .switchThemeBtn {
     @extend .link;
-    border: none;
-    background-color: #fff;
+
     width: $topBarHeight;
     padding: 0 0 4px;
     transition: all var(--duration);

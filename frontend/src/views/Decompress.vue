@@ -1,10 +1,10 @@
 <template>
-  <section class="compressor">
+  <section class="decompressor">
     <header class="title_wrapper">
-      <h1 class="title">Compressor</h1>
-      <div class="comment">Upload facial images to compress</div>
+      <h1 class="title">Decompressor</h1>
+      <div class="comment">Upload compressed images to decompress</div>
     </header>
-    <Uploader accept="image/*" />
+    <Uploader accept=".fic" />
   </section>
 </template>
 
@@ -17,7 +17,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.compressor {
+.decompressor {
   margin: 0 auto;
   padding: 60px 0;
   width: 900px;
