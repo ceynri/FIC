@@ -3,14 +3,14 @@
     <h1 class="title">Compressor</h1>
     <div class="comment">Upload facial image to compress</div>
     <div class="container">
-      <div class="image_list" v-if="isAdded">
+      <overlay-scrollbars class="image_list" v-if="isAdded">
         <div class="image_card" v-for="(item, i) in fileData" :key="i">
           <div class="image_wrapper">
             <img class="image" :src="item.data" />
           </div>
           <div class="image_name">{{ item.name }}</div>
         </div>
-      </div>
+      </overlay-scrollbars>
       <div
         class="upload_area clickable"
         :style="{ paddingTop: `${imageListHeight}px` }"
