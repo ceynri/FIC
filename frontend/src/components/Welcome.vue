@@ -80,10 +80,11 @@ export default {
       font-size: 20px;
       padding: 16px;
 
-      transition: filter var(--duration);
+      transition: filter var(--duration), box-shadow var(--duration);
 
       &:hover {
         filter: contrast(150%);
+        box-shadow: 2px 4px 16px 4px var(--shadow);
       }
     }
 
