@@ -1,4 +1,3 @@
-import IconBase from '@/components/IconBase.vue';
 import { mapState, mapMutations } from 'vuex';
 
 export default {
@@ -7,8 +6,5 @@ export default {
   },
   methods: {
     ...mapMutations(['setState']),
-  },
-  components: {
-    IconBase,
   },
 };
