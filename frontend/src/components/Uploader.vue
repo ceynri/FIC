@@ -1,15 +1,27 @@
 <template>
   <div class="uploader">
     <div class="container_border"></div>
-    <overlay-scrollbars class="image_list" v-if="isAdded">
+    <overlay-scrollbars class="image_list" v-viewer="viewerOptions" ref="imageList">
       <div class="image_item" v-for="(item, i) in fileData" :key="item.name">
         <div class="image_wrapper">
           <img class="image" :src="item.data" />
         </div>
-        <div class="image_name">{{ item.name }}</div>
-        <div class="icon_wrapper">
-          <button class="cancelBtn clickable" @click="deleteFile(i)">
-            <IconBase class="cancel" width="20px" height="20px" name="cancel">
+        <div class="image_info">
+          <div class="image_name">
+            {{ item.name }}
+          </div>
+          <div class="image_size">
+            {{ getSize(item.size) }}
+          </div>
+        </div>
+        <div class="btn_wrapper">
+          <button class="btn clickable" @click="watchOriginalImage(i)">
+            <IconBase width="20px" height="20px" name="zoom in">
+              <ZoomInIcon />
+            </IconBase>
+          </button>
+          <button class="btn clickable" @click="deleteFile(i)">
+            <IconBase width="20px" height="20px" name="cancel">
               <CancelIcon />
             </IconBase>
           </button>
@@ -44,8 +56,12 @@
 </template>
 
 <script>
+import ZoomInIcon from '@/components/icons/ZoomInIcon.vue';
 import CancelIcon from '@/components/icons/CancelIcon.vue';
 import AddIcon from '@/components/icons/AddIcon.vue';
+
+const BTYE_PER_KB = 2 ** 10;
+const BTYE_PER_MB = 2 ** 20;
 
 export default {
   props: {
@@ -63,6 +79,13 @@ export default {
       fileData: [],
       fileNameSet: new Set(),
       dragOver: false,
+      viewer: null,
+      viewerOptions: {
+        transition: false,
+        toolbar: false,
+        title: false,
+        navbar: false,
+      },
     };
   },
   computed: {
@@ -72,6 +95,10 @@ export default {
   },
   mounted() {
     this.bindDragEvent();
+    const imageListElem = this.$el.querySelector('.image_list');
+    imageListElem.addEventListener('ready', () => {
+      this.viewer = imageListElem.$viewer;
+    });
   },
   methods: {
     /**
@@ -82,20 +109,18 @@ export default {
       if (!dropArea) {
         return;
       }
-      dropArea.addEventListener('drop', (e) => {
-        this.dragOver = false;
-        this.dropEvent(e);
-      });
-      dropArea.addEventListener('dragenter', (e) => {
-        this.preventFn(e);
+      dropArea.addEventListener('dragenter', () => {
         this.dragOver = true;
       });
       dropArea.addEventListener('dragover', (e) => {
         this.preventFn(e);
       });
-      dropArea.addEventListener('dragleave', (e) => {
-        this.preventFn(e);
+      dropArea.addEventListener('dragleave', () => {
         this.dragOver = false;
+      });
+      dropArea.addEventListener('drop', (e) => {
+        this.dragOver = false;
+        this.dropEvent(e);
       });
     },
     /**
@@ -120,7 +145,7 @@ export default {
         if (this.fileNameSet.has(file.name)) {
           // TODO 可改为 Bubbling prompt
           console.warn(`存在重复的文件：${file.name}`);
-          alert(`存在重复的文件：${file.name}`);
+          // alert(`存在重复的文件：${file.name}`);
           return;
         }
         this.fileNameSet.add(file.name);
@@ -130,6 +155,7 @@ export default {
           this.fileData.push({
             name: file.name,
             data: fileReader.result,
+            size: file.size,
           });
           console.debug('fileData:', this.fileData);
         });
@@ -157,8 +183,25 @@ export default {
       e.stopPropagation();
       e.preventDefault();
     },
+    getSize(btye, remainder = 2) {
+      if (btye < BTYE_PER_KB) {
+        return `${btye} B`;
+      }
+      if (btye < BTYE_PER_MB) {
+        return `${(btye / BTYE_PER_KB).toFixed(remainder)} KB`;
+      }
+      return `${(btye / BTYE_PER_MB).toFixed(remainder)} MB`;
+    },
+    watchOriginalImage(i) {
+      if (!this.viewer) {
+        console.warn('viewer未初始化');
+        return;
+      }
+      this.viewer.view(i);
+    },
   },
   components: {
+    ZoomInIcon,
     CancelIcon,
     AddIcon,
   },
@@ -260,6 +303,8 @@ export default {
       .image_wrapper {
         height: $contentHeight;
         width: $contentHeight;
+        flex: none;
+
         display: flex;
         justify-content: center;
         align-items: center;
@@ -273,19 +318,28 @@ export default {
         }
       }
 
-      .image_name {
+      .image_info {
         color: var(--text2);
-        flex: 1;
+        min-width: 200px;
+        flex: auto;
+        padding: 0.5em 0;
+
+        .image_name {
+          margin-bottom: 0.5em;
+          @include no-wrap;
+        }
       }
 
-      .icon_wrapper {
+      .btn_wrapper {
         height: $contentHeight;
-        width: $contentHeight;
+        width: $contentHeight * 2;
+        flex: none;
+
         display: flex;
         justify-content: space-evenly;
         align-items: center;
 
-        .cancel {
+        .btn {
           opacity: 0.3;
           transition: opacity var(--duration);
 

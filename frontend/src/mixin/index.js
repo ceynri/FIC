@@ -1,6 +1,9 @@
+import Vue from 'vue';
 import { mapState, mapMutations } from 'vuex';
 
-export default {
+import IconBase from '@/components/IconBase.vue';
+
+const mixins = {
   computed: {
     ...mapState(['cssVars']),
   },
@@ -8,3 +11,7 @@ export default {
     ...mapMutations(['setState']),
   },
 };
+
+Vue.mixin(mixins);
+
+Vue.component('IconBase', IconBase);
