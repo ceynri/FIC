@@ -9,4 +9,16 @@ module.exports = {
       title: 'FIC - facial image compression tool base on deep learning',
     },
   },
+  devServer: {
+    // hot: true,
+    port: 8080,
+  },
+  // 配置全局样式变量
+  css: {
+    loaderOptions: {
+      sass: {
+        prependData: `@import "@/styles/_mixin.scss";`,
+      },
+    },
+  },
 };

@@ -1,8 +1,11 @@
 import Vue from 'vue';
 
 import OverlayScrollbars from 'overlayscrollbars';
-import 'overlayscrollbars/css/OverlayScrollbars.css';
 import { OverlayScrollbarsPlugin, OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
+
+import 'overlayscrollbars/css/OverlayScrollbars.css';
+import '@/styles/base.scss';
+
 import IconBase from '@/components/IconBase.vue';
 
 import App from './App.vue';
