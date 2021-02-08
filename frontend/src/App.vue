@@ -10,8 +10,6 @@ import TopBar from '@/components/TopBar.vue';
 
 import getKebabCase from '@/utils/getKebabCase';
 
-import '@/styles/base.scss';
-
 export default {
   mounted() {
     this.getCssVars();
