@@ -28,7 +28,7 @@
         </div>
       </div>
     </overlay-scrollbars>
-    <form class="upload_area clickable" ref="uploadArea" @click="selectFiles">
+    <form class="upload_area clickable" ref="uploadArea" @click="clickToUpload">
       <IconBase
         class="add"
         :width="isAdded ? 80 : 160"
@@ -123,7 +123,7 @@ export default {
     /**
      * 封装fileInput的点击事件
      */
-    selectFiles() {
+    clickToUpload() {
       this.$refs.fileInput.click();
     },
     /**
@@ -145,7 +145,7 @@ export default {
       this.addFiles(e.target.files);
     },
     /**
-     * 将文件保存为变量
+     * 将files保存为变量
      */
     addFiles(files) {
       console.debug('add files:', files);
@@ -153,20 +153,36 @@ export default {
         // 去重
         if (this.fileNameSet.has(file.name)) {
           // TODO 可改为 Bubbling prompt
-          console.warn(`存在重复的文件：${file.name}`);
-          // alert(`存在重复的文件：${file.name}`);
+          console.warn(`Duplicate file：${file.name}`);
+          // alert(`Duplicate file：${file.name}`);
           return;
         }
         this.fileNameSet.add(file.name);
         // 读取文件并保存
         const fileReader = new FileReader();
         fileReader.addEventListener('load', () => {
-          this.fileData.push({
+          const data = fileReader.result;
+          const imageItem = {
+            data,
             name: file.name,
-            data: fileReader.result,
             size: file.size,
-          });
+          };
+          const image = new Image();
+          image.src = data;
+          if (image.complete) {
+            // 如果有缓存，读缓存
+            imageItem.width = image.width;
+            imageItem.height = image.height;
+          } else {
+            image.onload = function () {
+              imageItem.width = image.width;
+              imageItem.height = image.height;
+              image.onload = null;
+            };
+          }
+          this.fileData.push(imageItem);
           console.debug('fileData:', this.fileData);
+          this.$emit('uploaded', imageItem);
         });
         fileReader.readAsDataURL(file);
       });
