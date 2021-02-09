@@ -1,0 +1,27 @@
+.none {
+  display: none !important;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.page_frame {
+  margin: 0 auto;
+  padding: 60px 20px;
+  max-width: 900px;
+}
+
+.title_wrapper {
+  .title {
+    font-size: 32px;
+    margin: 0;
+    margin-bottom: 8px;
+  }
+
+  .comment {
+    color: var(--text2);
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+}

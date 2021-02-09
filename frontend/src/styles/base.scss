@@ -1,4 +1,5 @@
 @import './var.scss';
+@import './global.scss';
 
 body {
   // font-family: Roboto, Noto, Helvetica, Arial, sans-serif;
@@ -24,14 +25,6 @@ body {
 a {
   text-decoration: none;
   color: inherit;
-}
-
-.none {
-  display: none !important;
-}
-
-.clickable {
-  cursor: pointer;
 }
 
 button {
