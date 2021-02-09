@@ -16,12 +16,12 @@
         </div>
         <div class="btn_wrapper">
           <button class="btn clickable" @click="watchOriginalImage(i)">
-            <IconBase width="20px" height="20px" name="zoom in">
+            <IconBase width="20px" height="20px" icon-name="zoom in">
               <ZoomInIcon />
             </IconBase>
           </button>
           <button class="btn clickable" @click="deleteFile(i)">
-            <IconBase width="20px" height="20px" name="cancel">
+            <IconBase width="20px" height="20px" icon-name="cancel">
               <CancelIcon />
             </IconBase>
           </button>
@@ -33,7 +33,7 @@
         class="add"
         :width="isAdded ? 80 : 160"
         :height="isAdded ? 80 : 160"
-        name="add"
+        icon-name="add"
         v-if="dragOver"
       >
         <AddIcon />
