@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import Home from '@/views/Home.vue';
+import Demo from '@/views/Demo.vue';
 import Compress from '@/views/Compress.vue';
 import Decompress from '@/views/Decompress.vue';
 
@@ -12,6 +13,11 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
+  },
+  {
+    path: '/demo',
+    name: 'Demo',
+    component: Demo,
   },
   {
     path: '/compress',

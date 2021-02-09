@@ -13,17 +13,13 @@
       <span class="name">FIC</span>
     </router-link>
     <div class="nav_wrapper">
+      <router-link to="demo" class="link">Demo</router-link>
       <router-link to="compress" class="link">Compress</router-link>
       <router-link to="decompress" class="link">Decompress</router-link>
       <router-link to="about" class="link">About</router-link>
       <a class="link" href="http://github.com/ceynri/FIC">Github</a>
-      <button
-        class="switchThemeBtn clickable"
-        @mouseover="isHover = true"
-        @mouseleave="isHover = false"
-        @click="switchTheme"
-      >
-        <IconBase name="dark theme" width="20" height="20" :icon-color="iconColor">
+      <button class="switch_theme_btn clickable" @click="switchTheme">
+        <IconBase class="switch_theme_icon" icon-name="dark theme" width="20" height="20">
           <DarkThemeIcon />
         </IconBase>
       </button>
@@ -36,16 +32,6 @@ import Favicon from '@/components/icons/Favicon.vue';
 import DarkThemeIcon from '@/components/icons/DarkThemeIcon.vue';
 
 export default {
-  data() {
-    return {
-      isHover: false,
-    };
-  },
-  computed: {
-    iconColor() {
-      return this.isHover ? this.cssVars.bg : this.cssVars.secondary;
-    },
-  },
   methods: {
     /**
      * 切换主题
@@ -70,7 +56,7 @@ $topBarHeight: 80px;
   display: flex;
   justify-content: space-between;
 
-  box-shadow: 0 0 64px var(--shadow);
+  box-shadow: 0 6px 64px -6px var(--shadow);
 
   .logo_wrapper,
   .nav_wrapper {
@@ -110,19 +96,18 @@ $topBarHeight: 80px;
 
     &:hover {
       background-color: var(--secondary);
-      color: #fff;
+      color: var(--bg2);
     }
   }
 
-  .switchThemeBtn {
+  .switch_theme_btn {
     @extend .link;
 
     width: $topBarHeight;
-    padding: 0 0 4px;
-    transition: all var(--duration);
+    padding: 0;
 
-    &:hover {
-      background-color: var(--secondary);
+    .switch_theme_icon {
+      margin-bottom: 0.2em;
     }
   }
 }

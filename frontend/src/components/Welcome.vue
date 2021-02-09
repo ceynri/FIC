@@ -8,17 +8,11 @@
           learning.
         </div>
         <div class="btn_container">
-          <router-link class="try_btn" to="compress">Try now!</router-link>
-          <a class="more_btn" href="#">learn more</a>
+          <router-link class="try_btn" to="demo">Try now!</router-link>
+          <router-link class="more_btn" to="about">learn more</router-link>
         </div>
       </section>
-      <IconBase
-        class="logo"
-        icon-name="logo"
-        width="250px"
-        height="250px"
-        :icon-color="cssVars.secondary"
-      >
+      <IconBase class="logo" icon-name="logo" width="250" height="250">
         <Favicon />
       </IconBase>
     </div>
@@ -55,6 +49,7 @@ export default {
     margin-right: 96px;
 
     .title {
+      color: var(--text);
       font-weight: bold;
       font-size: 48px;
       margin: 0 0 18px;
@@ -83,8 +78,7 @@ export default {
       transition: filter var(--duration), box-shadow var(--duration);
 
       &:hover {
-        filter: contrast(150%);
-        box-shadow: 2px 4px 16px 4px var(--shadow);
+        filter: contrast(150%) drop-shadow(2px 4px 16px var(--shadow));
       }
     }
 
@@ -97,7 +91,7 @@ export default {
 
     .more_btn {
       border: 2px var(--primary) solid;
-      background-color: #fff;
+      background-color: initial;
       color: var(--primary);
       padding: 14px;
     }
@@ -107,6 +101,7 @@ export default {
     display: block;
     height: 250px;
     width: 250px;
+    color: var(--secordary);
   }
 }
 </style>

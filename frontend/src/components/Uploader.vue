@@ -1,27 +1,39 @@
 <template>
   <div class="uploader">
     <div class="container_border"></div>
-    <overlay-scrollbars class="image_list" v-if="isAdded">
+    <overlay-scrollbars class="image_list" v-viewer="viewerOptions" ref="imageList">
       <div class="image_item" v-for="(item, i) in fileData" :key="item.name">
         <div class="image_wrapper">
           <img class="image" :src="item.data" />
         </div>
-        <div class="image_name">{{ item.name }}</div>
-        <div class="icon_wrapper">
-          <button class="cancelBtn clickable" @click="deleteFile(i)">
-            <IconBase class="cancel" width="20px" height="20px" name="cancel">
+        <div class="image_info">
+          <div class="image_name">
+            {{ item.name }}
+          </div>
+          <div class="image_size">
+            {{ sizeFormat(item.size) }}
+          </div>
+        </div>
+        <div class="btn_wrapper">
+          <button class="btn clickable" @click="viewImage(i)">
+            <IconBase width="20px" height="20px" icon-name="zoom in">
+              <ZoomInIcon />
+            </IconBase>
+          </button>
+          <button class="btn clickable" @click="deleteFile(i)">
+            <IconBase width="20px" height="20px" icon-name="cancel">
               <CancelIcon />
             </IconBase>
           </button>
         </div>
       </div>
     </overlay-scrollbars>
-    <form class="upload_area clickable" ref="uploadArea" @click="selectFiles">
+    <form class="upload_area clickable" ref="uploadArea" @click="clickToUpload">
       <IconBase
         class="add"
         :width="isAdded ? 80 : 160"
         :height="isAdded ? 80 : 160"
-        name="add"
+        icon-name="add"
         v-if="dragOver"
       >
         <AddIcon />
@@ -44,6 +56,7 @@
 </template>
 
 <script>
+import ZoomInIcon from '@/components/icons/ZoomInIcon.vue';
 import CancelIcon from '@/components/icons/CancelIcon.vue';
 import AddIcon from '@/components/icons/AddIcon.vue';
 
@@ -63,6 +76,13 @@ export default {
       fileData: [],
       fileNameSet: new Set(),
       dragOver: false,
+      viewer: null,
+      viewerOptions: {
+        transition: false,
+        toolbar: false,
+        title: false,
+        navbar: false,
+      },
     };
   },
   computed: {
@@ -72,6 +92,10 @@ export default {
   },
   mounted() {
     this.bindDragEvent();
+    const imageListElem = this.$el.querySelector('.image_list');
+    imageListElem.addEventListener('ready', () => {
+      this.viewer = imageListElem.$viewer;
+    });
   },
   methods: {
     /**
@@ -82,27 +106,37 @@ export default {
       if (!dropArea) {
         return;
       }
-      dropArea.addEventListener('drop', (e) => {
-        this.dragOver = false;
-        this.dropEvent(e);
-      });
-      dropArea.addEventListener('dragenter', (e) => {
-        this.preventFn(e);
+      dropArea.addEventListener('dragenter', () => {
         this.dragOver = true;
       });
       dropArea.addEventListener('dragover', (e) => {
         this.preventFn(e);
       });
-      dropArea.addEventListener('dragleave', (e) => {
-        this.preventFn(e);
+      dropArea.addEventListener('dragleave', () => {
         this.dragOver = false;
+      });
+      dropArea.addEventListener('drop', (e) => {
+        this.dragOver = false;
+        this.dropEvent(e);
       });
     },
     /**
      * 封装fileInput的点击事件
      */
-    selectFiles() {
+    clickToUpload() {
       this.$refs.fileInput.click();
+    },
+    /**
+     * 拖拽上传文件的事件处理
+     */
+    dropEvent(e) {
+      this.preventFn(e);
+      const files = e.dataTransfer?.files;
+      if (!this.multiple && files.length > 1) {
+        alert('Please upload only one image');
+        return;
+      }
+      this.addFiles(files);
     },
     /**
      * 从原生Input文件中获取files
@@ -111,7 +145,7 @@ export default {
       this.addFiles(e.target.files);
     },
     /**
-     * 将文件保存为变量
+     * 将files保存为变量
      */
     addFiles(files) {
       console.debug('add files:', files);
@@ -119,19 +153,36 @@ export default {
         // 去重
         if (this.fileNameSet.has(file.name)) {
           // TODO 可改为 Bubbling prompt
-          console.warn(`存在重复的文件：${file.name}`);
-          alert(`存在重复的文件：${file.name}`);
+          console.warn(`Duplicate file：${file.name}`);
+          // alert(`Duplicate file：${file.name}`);
           return;
         }
         this.fileNameSet.add(file.name);
         // 读取文件并保存
         const fileReader = new FileReader();
         fileReader.addEventListener('load', () => {
-          this.fileData.push({
+          const data = fileReader.result;
+          const imageItem = {
+            data,
             name: file.name,
-            data: fileReader.result,
-          });
+            size: file.size,
+          };
+          const image = new Image();
+          image.src = data;
+          if (image.complete) {
+            // 如果有缓存，读缓存
+            imageItem.width = image.width;
+            imageItem.height = image.height;
+          } else {
+            image.onload = function () {
+              imageItem.width = image.width;
+              imageItem.height = image.height;
+              image.onload = null;
+            };
+          }
+          this.fileData.push(imageItem);
           console.debug('fileData:', this.fileData);
+          this.$emit('uploaded', imageItem);
         });
         fileReader.readAsDataURL(file);
       });
@@ -144,11 +195,14 @@ export default {
       this.fileData.splice(i, 1);
     },
     /**
-     * 拖拽上传文件的事件处理
+     * 查看大图
      */
-    dropEvent(e) {
-      this.preventFn(e);
-      this.addFiles(e.dataTransfer.files);
+    viewImage(i) {
+      if (!this.viewer) {
+        console.error('viewer is not exist!');
+        return;
+      }
+      this.viewer.view(i);
     },
     /**
      * 禁止原生事件避免触发打开图片的原生行为
@@ -159,6 +213,7 @@ export default {
     },
   },
   components: {
+    ZoomInIcon,
     CancelIcon,
     AddIcon,
   },
@@ -226,16 +281,21 @@ export default {
 
   .image_list {
     width: 100%;
-    max-height: 1000px;
+    max-height: 550px;
     overflow-y: auto;
     padding: 0 15px;
 
     display: flex;
     flex-direction: column;
 
-    background-color: #fff;
+    background-color: var(--bg2);
     border-radius: $borderRadius;
-    box-shadow: 2px 4px 24px 4px var(--shadow);
+    box-shadow: 2px 4px 32px -4px var(--shadow);
+    transition: box-shadow var(--duration);
+
+    &:hover {
+      box-shadow: 2px 4px 28px 4px var(--shadow);
+    }
 
     .image_item {
       $height: 100px;
@@ -255,6 +315,8 @@ export default {
       .image_wrapper {
         height: $contentHeight;
         width: $contentHeight;
+        flex: none;
+
         display: flex;
         justify-content: center;
         align-items: center;
@@ -268,19 +330,28 @@ export default {
         }
       }
 
-      .image_name {
+      .image_info {
         color: var(--text2);
-        flex: 1;
+        min-width: 200px;
+        flex: auto;
+        padding: 0.5em 0;
+
+        .image_name {
+          margin-bottom: 0.5em;
+          @include no-wrap;
+        }
       }
 
-      .icon_wrapper {
+      .btn_wrapper {
         height: $contentHeight;
-        width: $contentHeight;
+        width: $contentHeight * 2;
+        flex: none;
+
         display: flex;
         justify-content: space-evenly;
         align-items: center;
 
-        .cancel {
+        .btn {
           opacity: 0.3;
           transition: opacity var(--duration);
 
