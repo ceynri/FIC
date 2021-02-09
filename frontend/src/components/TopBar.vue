@@ -13,6 +13,7 @@
       <span class="name">FIC</span>
     </router-link>
     <div class="nav_wrapper">
+      <router-link to="demo" class="link">Demo</router-link>
       <router-link to="compress" class="link">Compress</router-link>
       <router-link to="decompress" class="link">Decompress</router-link>
       <router-link to="about" class="link">About</router-link>
