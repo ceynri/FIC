@@ -1,13 +1,14 @@
-@mixin no-wrap() {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+@mixin no-wrap($lineNum: 1) {
+  @if ($lineNum == 1) {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  } @else {
+    overflow: hidden;
+    display: -webkit-box; // 将对象作为弹性伸缩盒子模型显示
+    text-overflow: ellipsis; // 可以用来多行文本的情况下，用省略号“...”隐藏超出范围的文本
+    -webkit-box-orient: vertical; // 设置或检索伸缩盒对象的子元素的排列方式
+    -webkit-line-clamp: $lineNum; // 限制在一个块元素显示的文本的行数
+    word-break: break-all;
+  }
 }
-
-// @mixin noWrap($width: 100%, $lineNum: 1) {
-//   overflow: hidden;
-//   display: -webkit-box; // 将对象作为弹性伸缩盒子模型显示
-//   text-overflow: ellipsis; // 可以用来多行文本的情况下，用省略号“...”隐藏超出范围的文本
-//   -webkit-box-orient: vertical; // 设置或检索伸缩盒对象的子元素的排列方式
-//   -webkit-line-clamp: $lineNum; // 限制在一个块元素显示的文本的行数
-// }
