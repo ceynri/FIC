@@ -1,27 +1,29 @@
 <template>
   <section class="decompressor">
-    <header class="title_wrapper">
-      <h1 class="title">Decompressor</h1>
-      <div class="comment">Upload compressed images to decompress</div>
-    </header>
-    <Uploader accept=".fic" />
+    <PageFrame>
+      <header class="title_wrapper">
+        <h1 class="title">Decompressor</h1>
+        <div class="comment">Upload compressed images to decompress</div>
+      </header>
+      <Uploader accept=".fic" />
+    </PageFrame>
   </section>
 </template>
 
 <script>
+import PageFrame from '@/components/PageFrame.vue';
 import Uploader from '@/components/Uploader.vue';
 
 export default {
-  components: { Uploader },
+  components: {
+    PageFrame,
+    Uploader,
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .decompressor {
-  margin: 0 auto;
-  padding: 60px 0;
-  width: 900px;
-
   .title {
     font-size: 32px;
     margin: 0;
