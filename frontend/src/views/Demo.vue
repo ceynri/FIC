@@ -1,19 +1,11 @@
 <template>
-  <section class="demo">
-    <PageFrame>
-      <header>Demo</header>
-    </PageFrame>
+  <section class="demo page_frame">
+    <header>Demo</header>
   </section>
 </template>
 
 <script>
-import PageFrame from '@/components/PageFrame.vue';
-
-export default {
-  components: {
-    PageFrame,
-  },
-};
+export default {};
 </script>
 
 <style>
