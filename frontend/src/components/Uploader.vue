@@ -11,11 +11,11 @@
             {{ item.name }}
           </div>
           <div class="image_size">
-            {{ getSize(item.size) }}
+            {{ sizeFormat(item.size) }}
           </div>
         </div>
         <div class="btn_wrapper">
-          <button class="btn clickable" @click="watchOriginalImage(i)">
+          <button class="btn clickable" @click="viewImage(i)">
             <IconBase width="20px" height="20px" icon-name="zoom in">
               <ZoomInIcon />
             </IconBase>
@@ -59,9 +59,6 @@
 import ZoomInIcon from '@/components/icons/ZoomInIcon.vue';
 import CancelIcon from '@/components/icons/CancelIcon.vue';
 import AddIcon from '@/components/icons/AddIcon.vue';
-
-const BTYE_PER_KB = 2 ** 10;
-const BTYE_PER_MB = 2 ** 20;
 
 export default {
   props: {
@@ -130,6 +127,18 @@ export default {
       this.$refs.fileInput.click();
     },
     /**
+     * 拖拽上传文件的事件处理
+     */
+    dropEvent(e) {
+      this.preventFn(e);
+      const files = e.dataTransfer?.files;
+      if (!this.multiple && files.length > 1) {
+        alert('Please upload only one image');
+        return;
+      }
+      this.addFiles(files);
+    },
+    /**
      * 从原生Input文件中获取files
      */
     getFiles(e) {
@@ -170,11 +179,14 @@ export default {
       this.fileData.splice(i, 1);
     },
     /**
-     * 拖拽上传文件的事件处理
+     * 查看大图
      */
-    dropEvent(e) {
-      this.preventFn(e);
-      this.addFiles(e.dataTransfer.files);
+    viewImage(i) {
+      if (!this.viewer) {
+        console.error('viewer is not exist!');
+        return;
+      }
+      this.viewer.view(i);
     },
     /**
      * 禁止原生事件避免触发打开图片的原生行为
@@ -182,22 +194,6 @@ export default {
     preventFn(e) {
       e.stopPropagation();
       e.preventDefault();
-    },
-    getSize(btye, remainder = 2) {
-      if (btye < BTYE_PER_KB) {
-        return `${btye} B`;
-      }
-      if (btye < BTYE_PER_MB) {
-        return `${(btye / BTYE_PER_KB).toFixed(remainder)} KB`;
-      }
-      return `${(btye / BTYE_PER_MB).toFixed(remainder)} MB`;
-    },
-    watchOriginalImage(i) {
-      if (!this.viewer) {
-        console.warn('viewer未初始化');
-        return;
-      }
-      this.viewer.view(i);
     },
   },
   components: {
