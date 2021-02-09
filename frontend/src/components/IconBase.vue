@@ -23,11 +23,11 @@ export default {
     },
     width: {
       type: [Number, String],
-      default: 18,
+      default: 20,
     },
     height: {
       type: [Number, String],
-      default: 18,
+      default: 20,
     },
     iconColor: {
       type: String,
@@ -41,7 +41,7 @@ export default {
 svg {
   display: inline-block;
   vertical-align: baseline;
-  margin-bottom: -2px; /* yes, I'm that particular about formatting */
+  /* margin-bottom: -2px; */
 
   pointer-events: none;
 }

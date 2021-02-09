@@ -13,8 +13,9 @@
   --btn-text: #fff;
   --btn-border: var(--btn-bg);
 
-  --bg: #fff;
-  --bg2: #efefef;
+  --bg: #fcfcff;
+  --bg2: #fff;
+  --bg3: #efefef;
 
   --border: #ddd;
   --border2: #888;
@@ -22,7 +23,8 @@
   --border-width: 1px;
   --standard-border: var(--border-width) var(--border-type) var(--border);
 
-  --shadow: #27272712;
+  --shadow: #27272716;
+  --shadow2: #27272732;
 
   --curve: cubic-bezier(0.4, 0, 0.2, 1);
   --duration: 0.2s;
