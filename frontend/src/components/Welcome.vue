@@ -8,17 +8,11 @@
           learning.
         </div>
         <div class="btn_container">
-          <router-link class="try_btn" to="compress">Try now!</router-link>
+          <router-link class="try_btn" to="demo">Try now!</router-link>
           <router-link class="more_btn" to="about">learn more</router-link>
         </div>
       </section>
-      <IconBase
-        class="logo"
-        icon-name="logo"
-        width="250px"
-        height="250px"
-        :icon-color="cssVars.secondary"
-      >
+      <IconBase class="logo" icon-name="logo" width="250" height="250">
         <Favicon />
       </IconBase>
     </div>
@@ -107,6 +101,7 @@ export default {
     display: block;
     height: 250px;
     width: 250px;
+    color: var(--secordary);
   }
 }
 </style>
