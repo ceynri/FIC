@@ -23,7 +23,7 @@
         @mouseleave="isHover = false"
         @click="switchTheme"
       >
-        <IconBase name="dark theme" width="20" height="20" :icon-color="iconColor">
+        <IconBase icon-name="dark theme" width="20" height="20" :icon-color="iconColor">
           <DarkThemeIcon />
         </IconBase>
       </button>
