@@ -55,6 +55,7 @@ export default {
     margin-right: 96px;
 
     .title {
+      color: var(--text);
       font-weight: bold;
       font-size: 48px;
       margin: 0 0 18px;

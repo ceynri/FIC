@@ -272,7 +272,7 @@ export default {
     display: flex;
     flex-direction: column;
 
-    background-color: #fff;
+    background-color: var(--bg2);
     border-radius: $borderRadius;
     box-shadow: 2px 4px 32px -4px var(--shadow);
     transition: box-shadow var(--duration);
