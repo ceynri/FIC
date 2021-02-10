@@ -74,14 +74,14 @@ export default {
 <style lang="scss" scoped>
 .demo {
   .card {
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     background-color: var(--bg2);
-    box-shadow: 4px 8px 72px var(--shadow);
+    box-shadow: 4px 8px 64px -4px var(--shadow);
 
-    transition: box-shadow 0.5s ease;
+    transition: box-shadow var(--duration);
 
     &:hover {
-      box-shadow: 4px 8px 96px 16px var(--shadow);
+      box-shadow: 4px 8px 72px 8px var(--shadow);
     }
   }
 
@@ -93,6 +93,7 @@ export default {
     .preview_panel {
       width: 300px;
       margin-right: 40px;
+      overflow: hidden;
 
       .image_wrapper {
         width: 100%;
@@ -100,7 +101,7 @@ export default {
         overflow: hidden;
 
         .image {
-          border-radius: 8px;
+          display: block;
           width: 100%;
           height: auto;
         }
@@ -108,13 +109,10 @@ export default {
 
       .image_info {
         color: var(--text2);
-        margin: 12px 16px 16px;
+        margin: 16px 20px 20px;
 
-        .image_name,
-        .image_size {
-          @include no-wrap;
-        }
         .image_name {
+          @include no-wrap;
           color: var(--text);
           font-size: 16px;
           margin-bottom: 10px;
