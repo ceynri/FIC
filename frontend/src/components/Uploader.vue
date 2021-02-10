@@ -209,8 +209,6 @@ export default {
 
 <style lang="scss" scoped>
 .uploader {
-  $borderRadius: 8px;
-
   min-height: 450px;
   width: 100%;
   display: flex;
@@ -227,7 +225,7 @@ export default {
     height: 100%;
 
     border: var(--standard-border);
-    border-radius: $borderRadius;
+    border-radius: var(--border-radius);
     transition: border var(--duration);
   }
 
@@ -276,7 +274,7 @@ export default {
     flex-direction: column;
 
     background-color: var(--bg2);
-    border-radius: $borderRadius;
+    border-radius: var(--border-radius);
     box-shadow: 2px 4px 32px -4px var(--shadow);
     transition: box-shadow var(--duration);
 
