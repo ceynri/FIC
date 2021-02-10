@@ -20,8 +20,8 @@
         <div class="setting_item">ratio</div>
         <div class="setting_item">quality</div>
         <div class="setting_item">xxx...</div>
-        <button class="next_btn clickable">
-          <div class="text">Next</div>
+        <button class="next_btn clickable" @click="compress">
+          <div class="text">Compress it</div>
           <IconBase width="20px" height="20px" icon-name="next">
             <RightArrowIcon />
           </IconBase>
@@ -42,26 +42,33 @@ export default {
     };
   },
   methods: {
+    /**
+     * 从 Uploader 获取上传的图片数据
+     */
     getImage(file) {
       this.image = {
         ...file,
         width: 0,
         height: 0,
       };
-
+      // 获取图片的分辨率
       const image = new Image();
       image.src = file.data;
       if (image.complete) {
-        // 如果有缓存，读缓存
+        // 如果有缓存则读缓存
         this.image.width = image.width;
         this.image.height = image.height;
       } else {
+        // 没缓存则需要加载一次
         image.onload = () => {
           this.image.width = image.width;
           this.image.height = image.height;
           image.onload = null;
         };
       }
+    },
+    compress() {
+      alert('TODO');
     },
   },
   components: {
@@ -127,7 +134,7 @@ export default {
 
     .setting_panel {
       flex: 1;
-      padding: 40px;
+      padding: 40px 40px 60px;
 
       display: flex;
       flex-direction: column;
@@ -136,7 +143,7 @@ export default {
       position: relative;
 
       .setting_item {
-        font-size: 18px;
+        font-size: 20px;
         margin-bottom: 40px;
       }
       .next_btn {
