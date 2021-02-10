@@ -167,19 +167,6 @@ export default {
             name: file.name,
             size: file.size,
           };
-          const image = new Image();
-          image.src = data;
-          if (image.complete) {
-            // 如果有缓存，读缓存
-            imageItem.width = image.width;
-            imageItem.height = image.height;
-          } else {
-            image.onload = function () {
-              imageItem.width = image.width;
-              imageItem.height = image.height;
-              image.onload = null;
-            };
-          }
           this.fileData.push(imageItem);
           console.debug('fileData:', this.fileData);
           this.$emit('uploaded', imageItem);

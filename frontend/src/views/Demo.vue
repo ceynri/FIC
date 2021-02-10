@@ -11,10 +11,8 @@
           <img class="image" :src="image.data" :alt="image.name" ref="image" />
         </div>
         <div class="image_info">
-          <div class="image_name">
-            {{ image.name }}
-          </div>
-          <div class="image_size">{{ this.image.width }} × {{ this.image.height }}</div>
+          <div class="image_name">{{ image.name }}</div>
+          <div v-if="image.width" class="image_size">{{ image.width }} × {{ image.height }}</div>
           <div class="image_size">{{ sizeFormat(image.size) }}</div>
         </div>
       </div>
@@ -45,7 +43,25 @@ export default {
   },
   methods: {
     getImage(file) {
-      this.image = file;
+      this.image = {
+        ...file,
+        width: 0,
+        height: 0,
+      };
+
+      const image = new Image();
+      image.src = file.data;
+      if (image.complete) {
+        // 如果有缓存，读缓存
+        this.image.width = image.width;
+        this.image.height = image.height;
+      } else {
+        image.onload = () => {
+          this.image.width = image.width;
+          this.image.height = image.height;
+          image.onload = null;
+        };
+      }
     },
   },
   components: {
