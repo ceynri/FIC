@@ -167,19 +167,6 @@ export default {
             name: file.name,
             size: file.size,
           };
-          const image = new Image();
-          image.src = data;
-          if (image.complete) {
-            // 如果有缓存，读缓存
-            imageItem.width = image.width;
-            imageItem.height = image.height;
-          } else {
-            image.onload = function () {
-              imageItem.width = image.width;
-              imageItem.height = image.height;
-              image.onload = null;
-            };
-          }
           this.fileData.push(imageItem);
           console.debug('fileData:', this.fileData);
           this.$emit('uploaded', imageItem);
@@ -222,8 +209,6 @@ export default {
 
 <style lang="scss" scoped>
 .uploader {
-  $borderRadius: 8px;
-
   min-height: 450px;
   width: 100%;
   display: flex;
@@ -240,7 +225,7 @@ export default {
     height: 100%;
 
     border: var(--standard-border);
-    border-radius: $borderRadius;
+    border-radius: var(--border-radius);
     transition: border var(--duration);
   }
 
@@ -289,7 +274,7 @@ export default {
     flex-direction: column;
 
     background-color: var(--bg2);
-    border-radius: $borderRadius;
+    border-radius: var(--border-radius);
     box-shadow: 2px 4px 32px -4px var(--shadow);
     transition: box-shadow var(--duration);
 

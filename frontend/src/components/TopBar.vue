@@ -1,13 +1,7 @@
 <template>
   <nav class="top_bar">
     <router-link class="logo_wrapper" to="/">
-      <IconBase
-        class="logo"
-        icon-name="logo"
-        width="32px"
-        height="32px"
-        :icon-color="cssVars.primary"
-      >
+      <IconBase class="logo" icon-name="logo" width="32px" height="32px">
         <Favicon />
       </IconBase>
       <span class="name">FIC</span>
@@ -64,6 +58,7 @@ $topBarHeight: 80px;
   }
 
   .logo_wrapper {
+    color: var(--primary);
     align-items: center;
     padding: 0 40px;
 
@@ -78,7 +73,6 @@ $topBarHeight: 80px;
     }
 
     .name {
-      color: var(--primary);
       margin-top: 8px;
       font-size: 32px;
       font-weight: bold;

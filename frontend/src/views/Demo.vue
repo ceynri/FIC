@@ -11,10 +11,8 @@
           <img class="image" :src="image.data" :alt="image.name" ref="image" />
         </div>
         <div class="image_info">
-          <div class="image_name">
-            {{ image.name }}
-          </div>
-          <div class="image_size">{{ this.image.width }} × {{ this.image.height }}</div>
+          <div class="image_name">{{ image.name }}</div>
+          <div v-if="image.width" class="image_size">{{ image.width }} × {{ image.height }}</div>
           <div class="image_size">{{ sizeFormat(image.size) }}</div>
         </div>
       </div>
@@ -22,8 +20,8 @@
         <div class="setting_item">ratio</div>
         <div class="setting_item">quality</div>
         <div class="setting_item">xxx...</div>
-        <button class="next_btn clickable">
-          <div class="text">Next</div>
+        <button class="next_btn clickable" @click="compress">
+          <div class="text">Compress it</div>
           <IconBase width="20px" height="20px" icon-name="next">
             <RightArrowIcon />
           </IconBase>
@@ -44,8 +42,33 @@ export default {
     };
   },
   methods: {
+    /**
+     * 从 Uploader 获取上传的图片数据
+     */
     getImage(file) {
-      this.image = file;
+      this.image = {
+        ...file,
+        width: 0,
+        height: 0,
+      };
+      // 获取图片的分辨率
+      const image = new Image();
+      image.src = file.data;
+      if (image.complete) {
+        // 如果有缓存则读缓存
+        this.image.width = image.width;
+        this.image.height = image.height;
+      } else {
+        // 没缓存则需要加载一次
+        image.onload = () => {
+          this.image.width = image.width;
+          this.image.height = image.height;
+          image.onload = null;
+        };
+      }
+    },
+    compress() {
+      alert('TODO');
     },
   },
   components: {
@@ -58,14 +81,14 @@ export default {
 <style lang="scss" scoped>
 .demo {
   .card {
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     background-color: var(--bg2);
-    box-shadow: 4px 8px 72px var(--shadow);
+    box-shadow: 4px 8px 64px -4px var(--shadow);
 
-    transition: box-shadow 0.5s ease;
+    transition: box-shadow var(--duration);
 
     &:hover {
-      box-shadow: 4px 8px 96px 16px var(--shadow);
+      box-shadow: 4px 8px 72px 8px var(--shadow);
     }
   }
 
@@ -77,6 +100,7 @@ export default {
     .preview_panel {
       width: 300px;
       margin-right: 40px;
+      overflow: hidden;
 
       .image_wrapper {
         width: 100%;
@@ -84,7 +108,7 @@ export default {
         overflow: hidden;
 
         .image {
-          border-radius: 8px;
+          display: block;
           width: 100%;
           height: auto;
         }
@@ -92,13 +116,10 @@ export default {
 
       .image_info {
         color: var(--text2);
-        margin: 12px 16px 16px;
+        margin: 16px 20px 20px;
 
-        .image_name,
-        .image_size {
-          @include no-wrap;
-        }
         .image_name {
+          @include no-wrap;
           color: var(--text);
           font-size: 16px;
           margin-bottom: 10px;
@@ -113,7 +134,7 @@ export default {
 
     .setting_panel {
       flex: 1;
-      padding: 40px;
+      padding: 40px 40px 60px;
 
       display: flex;
       flex-direction: column;
@@ -122,7 +143,7 @@ export default {
       position: relative;
 
       .setting_item {
-        font-size: 18px;
+        font-size: 20px;
         margin-bottom: 40px;
       }
       .next_btn {
