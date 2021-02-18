@@ -4,7 +4,10 @@
     <overlay-scrollbars class="image_list" v-viewer="viewerOptions" ref="imageList">
       <div class="image_item" v-for="(item, i) in fileData" :key="item.name">
         <div class="image_wrapper">
-          <img class="image" :src="item.data" />
+          <img class="image" v-if="isImage(item.dataUrl)" :src="item.dataUrl" />
+          <IconBase v-else width="60px" height="60px" icon-name="archive">
+            <ArchiveIcon />
+          </IconBase>
         </div>
         <div class="image_info">
           <div class="image_name">
@@ -15,7 +18,7 @@
           </div>
         </div>
         <div class="btn_wrapper">
-          <button class="btn clickable" @click="viewImage(i)">
+          <button v-if="isImage(item.dataUrl)" class="btn clickable" @click="viewImage(i)">
             <IconBase width="20px" height="20px" icon-name="zoom in">
               <ZoomInIcon />
             </IconBase>
@@ -56,9 +59,12 @@
 </template>
 
 <script>
+import ArchiveIcon from '@/components/icons/ArchiveIcon.vue';
 import ZoomInIcon from '@/components/icons/ZoomInIcon.vue';
 import CancelIcon from '@/components/icons/CancelIcon.vue';
 import AddIcon from '@/components/icons/AddIcon.vue';
+
+import readFile from '@/utils/readFile';
 
 export default {
   props: {
@@ -149,7 +155,7 @@ export default {
      */
     addFiles(files) {
       console.debug('add files:', files);
-      files.forEach((file) => {
+      files.forEach(async (file) => {
         // 去重
         if (this.fileNameSet.has(file.name)) {
           // TODO 可改为 Bubbling prompt
@@ -158,20 +164,25 @@ export default {
           return;
         }
         this.fileNameSet.add(file.name);
-        // 读取文件并保存
-        const fileReader = new FileReader();
-        fileReader.addEventListener('load', () => {
-          const data = fileReader.result;
-          const imageItem = {
-            data,
-            name: file.name,
-            size: file.size,
-          };
-          this.fileData.push(imageItem);
-          console.debug('fileData:', this.fileData);
-          this.$emit('uploaded', imageItem);
-        });
-        fileReader.readAsDataURL(file);
+
+        // 读取文件的dataUrl与二进制格式
+        const [dataUrl, blob] = await Promise.all([
+          readFile(file, 'dataUrl'),
+          readFile(file, 'blob'),
+        ]);
+        // 将图片保存为变量
+        const imageItem = {
+          dataUrl,
+          blob,
+          name: file.name,
+          size: file.size,
+        };
+        this.fileData.push(imageItem);
+
+        console.debug('fileData:', this.fileData);
+
+        // TODO: 下一行为Demo模块所做的单独逻辑，可考虑是否有优化空间
+        this.$emit('uploaded', imageItem);
       });
     },
     /**
@@ -192,6 +203,12 @@ export default {
       this.viewer.view(i);
     },
     /**
+     * 判断 dataUrl 字符串是否为图像
+     */
+    isImage(dataUrl) {
+      return dataUrl && dataUrl.startsWith('data:image');
+    },
+    /**
      * 禁止原生事件避免触发打开图片的原生行为
      */
     preventFn(e) {
@@ -200,6 +217,7 @@ export default {
     },
   },
   components: {
+    ArchiveIcon,
     ZoomInIcon,
     CancelIcon,
     AddIcon,
@@ -328,15 +346,16 @@ export default {
       }
 
       .btn_wrapper {
-        height: $contentHeight;
-        width: $contentHeight * 2;
+        $spaceDist: $contentHeight / 3;
+        height: 100%;
+        padding-left: $spaceDist;
         flex: none;
 
         display: flex;
-        justify-content: space-evenly;
         align-items: center;
 
         .btn {
+          margin-right: $spaceDist;
           opacity: 0.3;
           transition: opacity var(--duration);
 
