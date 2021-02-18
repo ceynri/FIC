@@ -8,7 +8,7 @@
     <div v-else class="container">
       <div class="preview_panel card">
         <div class="image_wrapper">
-          <img class="image" :src="image.data" :alt="image.name" ref="image" />
+          <img class="image" :src="image.base64" :alt="image.name" ref="image" />
         </div>
         <div class="image_info">
           <div class="image_name">{{ image.name }}</div>
@@ -53,7 +53,7 @@ export default {
       };
       // 获取图片的分辨率
       const image = new Image();
-      image.src = file.data;
+      image.src = file.base64;
       if (image.complete) {
         // 如果有缓存则读缓存
         this.image.width = image.width;
