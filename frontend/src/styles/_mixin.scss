@@ -1,5 +1,7 @@
 @mixin no-wrap($lineNum: 1) {
   @if ($lineNum == 1) {
+    /* 中文会被遮盖住顶端，故设置行高为1.2 */
+    line-height: 1.2;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
