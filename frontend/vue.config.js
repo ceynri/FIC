@@ -12,6 +12,7 @@ module.exports = {
   devServer: {
     // hot: true,
     port: 8080,
+    allowedHosts: ['.ceynri.cn'],
   },
   // 配置全局样式变量
   css: {
