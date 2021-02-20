@@ -11,33 +11,23 @@
       <router-link to="compress" class="link">Compress</router-link>
       <router-link to="decompress" class="link">Decompress</router-link>
       <router-link to="about" class="link">About</router-link>
-      <a class="link" href="http://github.com/ceynri/FIC">Github</a>
-      <button class="switch_theme_btn clickable" @click="switchTheme">
-        <IconBase class="switch_theme_icon" icon-name="dark theme" width="20" height="20">
-          <DarkThemeIcon />
+      <a class="switch_theme_btn" href="http://github.com/ceynri/FIC">
+        <IconBase class="github_icon" icon-name="github" width="28" height="28">
+          <GithubIcon />
         </IconBase>
-      </button>
+      </a>
     </div>
   </nav>
 </template>
 
 <script>
 import Favicon from '@/components/icons/Favicon.vue';
-import DarkThemeIcon from '@/components/icons/DarkThemeIcon.vue';
+import GithubIcon from '@/components/icons/GithubIcon.vue';
 
 export default {
-  methods: {
-    /**
-     * 切换主题
-     * @TODO 暂定功能，可换为github按钮
-     */
-    switchTheme() {
-      alert('todo');
-    },
-  },
   components: {
     Favicon,
-    DarkThemeIcon,
+    GithubIcon,
   },
 };
 </script>
@@ -100,7 +90,7 @@ $topBarHeight: 80px;
     width: $topBarHeight;
     padding: 0;
 
-    .switch_theme_icon {
+    .github_icon {
       margin-bottom: 0.2em;
     }
   }
