@@ -18,6 +18,11 @@
           </div>
         </div>
         <div class="btn_wrapper">
+          <button v-if="item.result" class="btn clickable" @click="downloadResult(item.result)">
+            <IconBase width="20px" height="20px" icon-name="download">
+              <DownloadIcon />
+            </IconBase>
+          </button>
           <button v-if="isImage(item.dataUrl)" class="btn clickable" @click="viewImage(i)">
             <IconBase width="20px" height="20px" icon-name="zoom in">
               <ZoomInIcon />
@@ -60,6 +65,7 @@
 
 <script>
 import ArchiveIcon from '@/components/icons/ArchiveIcon.vue';
+import DownloadIcon from '@/components/icons/DownloadIcon.vue';
 import ZoomInIcon from '@/components/icons/ZoomInIcon.vue';
 import CancelIcon from '@/components/icons/CancelIcon.vue';
 import AddIcon from '@/components/icons/AddIcon.vue';
@@ -238,6 +244,7 @@ export default {
   },
   components: {
     ArchiveIcon,
+    DownloadIcon,
     ZoomInIcon,
     CancelIcon,
     AddIcon,
@@ -378,6 +385,7 @@ export default {
           margin-right: $spaceDist;
           opacity: 0.3;
           transition: opacity var(--duration);
+          color: var(--secondary);
 
           &:hover {
             opacity: 1;
