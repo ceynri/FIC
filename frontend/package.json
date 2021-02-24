@@ -9,6 +9,7 @@
     "lint:fix": "vue-cli-service lint --fix"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "overlayscrollbars": "^1.13.1",
     "overlayscrollbars-vue": "^0.2.2",

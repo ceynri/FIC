@@ -3,6 +3,8 @@ node_modules
 /dist
 /service/dataset
 /service/result
+/public/temp
+/public/result
 
 # Logs
 logs

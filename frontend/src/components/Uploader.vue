@@ -2,7 +2,7 @@
   <div class="uploader">
     <div class="container_border"></div>
     <overlay-scrollbars class="image_list" v-viewer="viewerOptions" ref="imageList">
-      <div class="image_item" v-for="(item, i) in fileData" :key="item.name">
+      <div class="image_item" v-for="(item, i) in fileList" :key="item.name">
         <div class="image_wrapper">
           <img class="image" v-if="isImage(item.dataUrl)" :src="item.dataUrl" />
           <IconBase v-else width="60px" height="60px" icon-name="archive">
@@ -18,6 +18,11 @@
           </div>
         </div>
         <div class="btn_wrapper">
+          <button v-if="item.result" class="btn clickable" @click="downloadResult(item.result)">
+            <IconBase width="20px" height="20px" icon-name="download">
+              <DownloadIcon />
+            </IconBase>
+          </button>
           <button v-if="isImage(item.dataUrl)" class="btn clickable" @click="viewImage(i)">
             <IconBase width="20px" height="20px" icon-name="zoom in">
               <ZoomInIcon />
@@ -60,11 +65,13 @@
 
 <script>
 import ArchiveIcon from '@/components/icons/ArchiveIcon.vue';
+import DownloadIcon from '@/components/icons/DownloadIcon.vue';
 import ZoomInIcon from '@/components/icons/ZoomInIcon.vue';
 import CancelIcon from '@/components/icons/CancelIcon.vue';
 import AddIcon from '@/components/icons/AddIcon.vue';
 
 import readFile from '@/utils/readFile';
+import { uploads } from '@/service';
 
 export default {
   props: {
@@ -79,7 +86,7 @@ export default {
   },
   data() {
     return {
-      fileData: [],
+      fileList: [],
       fileNameSet: new Set(),
       dragOver: false,
       viewer: null,
@@ -93,7 +100,7 @@ export default {
   },
   computed: {
     isAdded() {
-      return this.fileData.length > 0;
+      return this.fileList.length > 0;
     },
   },
   mounted() {
@@ -166,31 +173,50 @@ export default {
         this.fileNameSet.add(file.name);
 
         // 读取文件的dataUrl与二进制格式
-        const [dataUrl, blob] = await Promise.all([
-          readFile(file, 'dataUrl'),
-          readFile(file, 'blob'),
-        ]);
-        // 将图片保存为变量
-        const imageItem = {
-          dataUrl,
-          blob,
-          name: file.name,
-          size: file.size,
-        };
-        this.fileData.push(imageItem);
+        try {
+          const [dataUrl, blob] = await Promise.all([
+            readFile(file, 'dataUrl'),
+            readFile(file, 'blob'),
+          ]);
+          // 将图片保存为变量
+          const fileItem = {
+            dataUrl,
+            blob,
+            name: file.name,
+            size: file.size,
+            rawFile: file,
+          };
+          this.fileList.push(fileItem);
 
-        console.debug('fileData:', this.fileData);
+          // TODO: 将改为点击按钮后再执行上传文件并压缩的请求
+          // this.uploadFile(file);
 
-        // TODO: 下一行为Demo模块所做的单独逻辑，可考虑是否有优化空间
-        this.$emit('uploaded', imageItem);
+          console.debug('fileList:', this.fileList);
+          // TODO: 下一行为Demo模块所做的单独逻辑，可考虑是否有优化空间
+          this.$emit('uploaded', fileItem);
+        } catch (e) {
+          console.error(e);
+          alert(`${file.name}上传失败，请重新上传`);
+        }
       });
+    },
+    /**
+     * 上传文件
+     */
+    async uploadFile(file) {
+      try {
+        const res = await uploads(file);
+        console.log(res);
+      } catch (e) {
+        console.error(e);
+      }
     },
     /**
      * 删除特定的文件
      */
     deleteFile(i) {
-      this.fileNameSet.delete(this.fileData[i].name);
-      this.fileData.splice(i, 1);
+      this.fileNameSet.delete(this.fileList[i].name);
+      this.fileList.splice(i, 1);
     },
     /**
      * 查看大图
@@ -218,6 +244,7 @@ export default {
   },
   components: {
     ArchiveIcon,
+    DownloadIcon,
     ZoomInIcon,
     CancelIcon,
     AddIcon,
@@ -358,6 +385,7 @@ export default {
           margin-right: $spaceDist;
           opacity: 0.3;
           transition: opacity var(--duration);
+          color: var(--secondary);
 
           &:hover {
             opacity: 1;
