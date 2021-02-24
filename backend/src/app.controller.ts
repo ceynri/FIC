@@ -21,4 +21,10 @@ export class AppController {
   uploadFile(@UploadedFile() file) {
     return this.appService.uploadFile(file);
   }
+
+  @Post('demo_process')
+  @UseInterceptors(FileInterceptor('file'))
+  demoProcess(@UploadedFile() file) {
+    return this.appService.demoProcess(file);
+  }
 }

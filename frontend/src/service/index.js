@@ -12,3 +12,13 @@ export function uploads(file) {
     },
   });
 }
+
+export function demoProcess(file) {
+  const data = new FormData();
+  data.append('file', file);
+  return axios.post(`${baseUrl}/demo_process`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}

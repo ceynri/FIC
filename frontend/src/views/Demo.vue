@@ -1,11 +1,16 @@
 <template>
   <section class="demo page_frame">
+    <div class="header_wrapper">
+      <header class="title_wrapper">
+        <h1 class="title">Demo</h1>
         <div class="comment">Try to upload a facial image</div>
+      </header>
+    </div>
     <Uploader v-if="!image" accept="image/*" :multiple="false" @uploaded="getImage" />
     <div v-else class="container">
       <div class="preview_panel card">
         <div class="image_wrapper">
-          <img class="image" :src="image.base64" :alt="image.name" ref="image" />
+          <img class="image" :src="image.dataUrl" :alt="image.name" ref="image" />
         </div>
         <div class="image_info">
           <div class="image_name">{{ image.name }}</div>
@@ -17,8 +22,8 @@
         <div class="setting_item">ratio</div>
         <div class="setting_item">quality</div>
         <div class="setting_item">xxx...</div>
-        <button class="next_btn clickable" @click="compress">
-          <div class="text">Compress it</div>
+        <button class="next_btn clickable" @click="process">
+          <div class="text">Process it</div>
           <IconBase width="20px" height="20px" icon-name="next">
             <RightArrowIcon />
           </IconBase>
@@ -31,6 +36,8 @@
 <script>
 import Uploader from '@/components/Uploader.vue';
 import RightArrowIcon from '@/components/icons/RightArrowIcon.vue';
+
+import { demoProcess } from '@/service';
 
 export default {
   data() {
@@ -64,8 +71,13 @@ export default {
         };
       }
     },
-    compress() {
-      alert('TODO');
+    async process() {
+      try {
+        const res = await demoProcess(this.image.rawFile);
+        console.log(res);
+      } catch (e) {
+        console.error('demo process error', e);
+      }
     },
   },
   components: {
