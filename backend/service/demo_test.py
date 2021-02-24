@@ -1,15 +1,14 @@
-from os import path
-import sys
-
 import torch
 from torch import nn
 
+# import torchvision
 from torchvision import transforms
 from torchvision.utils import save_image
 
-# from torch.utils.data import DataLoader
-# from dataset import dataset
+from torch.utils.data import DataLoader
+from dataset import dataset
 
+import numpy as np
 from PIL import Image
 
 from facenet_pytorch import InceptionResnetV1
@@ -45,10 +44,8 @@ if __name__ == "__main__":
     e_param = torch.load('./data/enhancement_layer.pth')
     e_layer.load_state_dict(e_param)
 
-    img_path = sys.argv[1]
-    img_ext = path.splitext(img_path)[1]
-    img_name = path.splitext(path.basename(img_path))[0]
-    data = load_regularize_data(img_path)
+    file_name = 'test'
+    data = load_regularize_data(f'./data/{file_name}.jpg')
 
     with torch.no_grad():
         x = data
@@ -74,16 +71,9 @@ if __name__ == "__main__":
         x_rec.cuda()
         output = x_feat + decoded
 
-        base_path = '../public/result'
-        result = [
-            [x, f'{base_path}/{img_name}{img_ext}'],
-            [x_tex, f'{base_path}/{img_name}_tex{img_ext}'],
-            [output, f'{base_path}/{img_name}_output{img_ext}'],
-            [x_feat, f'{base_path}/{img_name}_feat{img_ext}'],
-            [x_rec, f'{base_path}/{img_name}_rec{img_ext}'],
-            [decoded, f'{base_path}/{img_name}_decoded{img_ext}'],
-        ]
-        for item in result:
-            save_image(item[0], item[1])
-
-        print(result[:1])
+        save_image(x, f'./result/{file_name}.png')
+        save_image(x_tex, f'./result/{file_name}_tex.png')
+        save_image(output, f'./result/{file_name}_output.png')
+        save_image(x_feat, f'./result/{file_name}_feat.png')
+        save_image(x_rec, f'./result/{file_name}_rec.png')
+        save_image(decoded, f'./result/{file_name}_decoded.png')
