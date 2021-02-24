@@ -1,9 +1,11 @@
 <template>
   <section class="decompressor page_frame">
-    <header class="title_wrapper">
-      <h1 class="title">Decompressor</h1>
-      <div class="comment">Upload compressed images to decompress</div>
-    </header>
+    <div class="header_wrapper">
+      <header class="title_wrapper">
+        <h1 class="title">Decompressor</h1>
+        <div class="comment">Upload compressed images to decompress</div>
+      </header>
+    </div>
     <Uploader accept=".fic" />
   </section>
 </template>
