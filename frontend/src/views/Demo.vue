@@ -1,9 +1,6 @@
 <template>
   <section class="demo page_frame">
-    <header class="title_wrapper">
-      <h1 class="title">Demo</h1>
-      <div class="comment">Try to upload a facial image</div>
-    </header>
+        <div class="comment">Try to upload a facial image</div>
     <Uploader v-if="!image" accept="image/*" :multiple="false" @uploaded="getImage" />
     <div v-else class="container">
       <div class="preview_panel card">
