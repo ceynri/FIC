@@ -7,35 +7,15 @@
       </header>
     </div>
     <Uploader v-if="!image" accept="image/*" :multiple="false" @uploaded="getImage" />
-    <div v-else class="container">
-      <div class="preview_panel card">
-        <div class="image_wrapper">
-          <img class="image" :src="image.dataUrl" :alt="image.name" ref="image" />
-        </div>
-        <div class="image_info">
-          <div class="image_name">{{ image.name }}</div>
-          <div v-if="image.width" class="image_size">{{ image.width }} × {{ image.height }}</div>
-          <div class="image_size">{{ sizeFormat(image.size) }}</div>
-        </div>
-      </div>
-      <div class="setting_panel card">
-        <div class="setting_item">ratio</div>
-        <div class="setting_item">quality</div>
-        <div class="setting_item">xxx...</div>
-        <button class="next_btn clickable" @click="process">
-          <div class="text">Process it</div>
-          <IconBase width="20px" height="20px" icon-name="next">
-            <RightArrowIcon />
-          </IconBase>
-        </button>
-      </div>
-    </div>
+    <DemoOptions v-else-if="!result" :image="image" @next="process" />
+    <DemoResult v-else :data="result" />
   </section>
 </template>
 
 <script>
 import Uploader from '@/components/Uploader.vue';
-import RightArrowIcon from '@/components/icons/RightArrowIcon.vue';
+import DemoOptions from '@/components/DemoOptions.vue';
+import DemoResult from '@/components/DemoResult.vue';
 
 import { demoProcess } from '@/service';
 
@@ -43,6 +23,7 @@ export default {
   data() {
     return {
       image: null,
+      result: null,
     };
   },
   methods: {
@@ -75,6 +56,21 @@ export default {
       try {
         const res = await demoProcess(this.image.rawFile);
         console.log(res);
+        // mock
+        this.result = {
+          raw: 'https://i.loli.net/2021/02/24/6cwenlBikqALFvg.png',
+          rawResolution: '123x234',
+          rawSize: '123KB',
+          input: 'https://i.loli.net/2021/02/24/YC7V5BAeU1poyDv.png',
+          inputSize: '40KB',
+          feat: 'https://i.loli.net/2021/02/24/HatRnmOZX2Aqpl5.png',
+          featSize: '128B',
+          resi: 'https://i.loli.net/2021/02/24/KYLRkxztadmPwXW.png',
+          resiSize: '10KB',
+          compressedData: '[Blob Object]',
+          compressedSize: '11KB',
+          output: 'https://i.loli.net/2021/02/24/MsGY1ExF9Ktkmal.png',
+        };
       } catch (e) {
         console.error('demo process error', e);
       }
@@ -82,103 +78,13 @@ export default {
   },
   components: {
     Uploader,
-    RightArrowIcon,
+    DemoOptions,
+    DemoResult,
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .demo {
-  .card {
-    border-radius: var(--border-radius);
-    background-color: var(--bg2);
-    box-shadow: 4px 8px 64px -4px var(--shadow);
-
-    transition: box-shadow var(--duration);
-
-    &:hover {
-      box-shadow: 4px 8px 72px 8px var(--shadow);
-    }
-  }
-
-  .container {
-    margin: 30px 0;
-    display: flex;
-    align-items: flex-start;
-
-    .preview_panel {
-      width: 300px;
-      margin-right: 40px;
-      overflow: hidden;
-
-      .image_wrapper {
-        width: 100%;
-        max-height: 600px;
-        overflow: hidden;
-
-        .image {
-          display: block;
-          width: 100%;
-          height: auto;
-        }
-      }
-
-      .image_info {
-        color: var(--text2);
-        margin: 16px 20px 20px;
-
-        .image_name {
-          @include no-wrap;
-          color: var(--text);
-          font-size: 16px;
-          margin-bottom: 10px;
-        }
-
-        .image_size {
-          font-size: 12px;
-          margin-top: 8px;
-        }
-      }
-    }
-
-    .setting_panel {
-      flex: 1;
-      padding: 40px 40px 60px;
-
-      display: flex;
-      flex-direction: column;
-      // justify-content: space-evenly;
-
-      position: relative;
-
-      .setting_item {
-        font-size: 20px;
-        margin-bottom: 40px;
-      }
-      .next_btn {
-        position: absolute;
-        right: 40px;
-        bottom: 30px;
-
-        display: flex;
-        align-items: center;
-
-        color: var(--primary);
-        border-radius: 100px;
-        padding: 15px 20px;
-
-        transition: box-shadow var(--duration);
-
-        &:hover {
-          box-shadow: 2px 4px 32px -4px var(--shadow);
-        }
-
-        .text {
-          margin: 0 6px -0.1em;
-          font-size: 20px;
-        }
-      }
-    }
-  }
 }
 </style>
