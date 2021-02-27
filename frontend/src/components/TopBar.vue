@@ -63,7 +63,6 @@ $topBarHeight: 80px;
     }
 
     .name {
-      margin-top: 8px;
       font-size: 32px;
       font-weight: bold;
     }
