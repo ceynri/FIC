@@ -17,7 +17,7 @@ import Uploader from '@/components/Uploader.vue';
 import DemoOptions from '@/components/DemoOptions.vue';
 import DemoResult from '@/components/DemoResult.vue';
 
-import { demoProcess } from '@/service';
+// import { demoProcess } from '@/service';
 
 export default {
   data() {
@@ -54,8 +54,8 @@ export default {
     },
     async process() {
       try {
-        const res = await demoProcess(this.image.rawFile);
-        console.log(res);
+        // const res = await demoProcess(this.image.rawFile);
+        // console.log(res);
         // mock
         this.result = {
           raw: 'https://i.loli.net/2021/02/24/6cwenlBikqALFvg.png',
