@@ -1,9 +1,37 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <TopBar />
+    <router-view />
   </div>
 </template>
+
+<script>
+import TopBar from '@/components/TopBar.vue';
+
+import getKebabCase from '@/utils/getKebabCase';
+
+export default {
+  mounted() {
+    this.getCssVars();
+  },
+  methods: {
+    getCssVars() {
+      const rootElem = document.documentElement;
+      const rootStyle = getComputedStyle(rootElem);
+      const cssVars = {};
+      const propList = ['primary', 'secondary', 'bg'];
+      propList.forEach((prop) => {
+        const styleStr = getKebabCase(prop);
+        cssVars[prop] = rootStyle.getPropertyValue(`--${styleStr}`).trim();
+      });
+      this.setState({
+        state: 'cssVars',
+        value: cssVars,
+      });
+    },
+  },
+  components: {
+    TopBar,
+  },
+};
+</script>
