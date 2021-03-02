@@ -6,23 +6,27 @@ import * as fs from 'fs';
 
 import * as moment from 'moment';
 
+import recursiveMkdir from './utils/recursiveMkdir';
+
 @Injectable()
 export class AppService {
-  readonly basePath = path.join(__dirname, '../public/temp');
+  readonly basePath = '/data/fic';
 
   getHello(): string {
     return 'Hello World!';
   }
 
   getPath(file): string {
-    const date = moment().format('YYYY-MM-DD');
-    return path.join(this.basePath, `./${date}/${file.originalname}`);
+    const date = moment().format('YYYY/MM/DD');
+    return path.join(this.basePath, './uploads', date, file.originalname);
   }
 
-  uploadFile(file, storagePath = '') {
+  async uploadFile(file, storagePath = '') {
     if (!storagePath) {
       storagePath = this.getPath(file);
     }
+    await recursiveMkdir(storagePath);
+
     console.debug(file);
     const writeStream = fs.createWriteStream(storagePath);
     writeStream.write(file.buffer);
@@ -55,7 +59,7 @@ export class AppService {
           const name = fullName.slice(0, fullName.lastIndexOf('.'));
           const ext = fullName.slice(fullName.lastIndexOf('.'));
           resolve({
-            output: `http://127.0.0.1:3000/assets/result/${name}_output${ext}`,
+            output: `http://127.0.0.1:1127/assets/result/${name}_output${ext}`,
           });
         },
       );

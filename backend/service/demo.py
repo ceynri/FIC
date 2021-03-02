@@ -1,18 +1,18 @@
 from os import path
 import sys
 import numpy as np
+import pickle
 
 import torch
 from torch import nn
 from torchvision import transforms
 from torchvision.utils import save_image
 
-from autocrop import Cropper
-
 # from torch.utils.data import DataLoader
 # from dataset import dataset
 
 from PIL import Image
+from autocrop import Cropper
 
 from facenet_pytorch import InceptionResnetV1
 
@@ -20,11 +20,10 @@ from base_layer import BaseLayer
 from enhancement_layer import ImageCompressor
 
 
-base_path = '../public/result'
+base_path = '/data/fic/result'
 
 
 def load_tensor(img_path):
-    # img = Image.open(img_path).convert('RGB')
     cropper = Cropper()
     img_cropped = cropper.crop(img_path)
     img = Image.fromarray(img_cropped)
@@ -36,10 +35,19 @@ def load_tensor(img_path):
     return tensor
 
 
-def save_compressed_data(tensor, name):
+def save_compressed_data(feat, tex, name):
     file_name = path.join(base_path, name)
-    data = np.array(tensor.numpy())  # tensor转换成array
-    np.savetxt(file_name, data)
+    data = {
+        'feat': feat,
+        'tex': tex,
+    }
+    with open(file_name, 'wb') as f:
+        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+
+
+def load_compressed_data(file_name):
+    with open(file_name, 'wb') as f:
+        return pickle.load(f)
 
 
 if __name__ == "__main__":
@@ -84,14 +92,12 @@ if __name__ == "__main__":
         t_Max = torch.max(x_resi)
         t_Min = torch.min(x_resi)
         x_resi_norm = (x_resi - t_Min) / (t_Max - t_Min)
-        # x_resi_norm.cuda()
         # 纹理图压缩+解压
         x_recon = e_layer(x_resi)
         # 纹理图归一化
         r_Max = torch.max(x_recon)
         r_Min = torch.min(x_recon)
         x_recon_norm = (x_recon - r_Min) / (r_Max - r_Min)
-        # x_recon_norm.cuda()
         # 结果图
         output = x_feat + x_recon
 
@@ -106,3 +112,5 @@ if __name__ == "__main__":
         ]
         for item in result:
             save_image(item[0], path.join(base_path, item[1]))
+
+        save_compressed_data(feat, tex, f'{img_name}.fic')
