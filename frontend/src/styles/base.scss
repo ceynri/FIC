@@ -1,0 +1,34 @@
+@import './var.scss';
+@import './global.scss';
+
+body {
+  // font-family: Roboto, Noto, Helvetica, Arial, sans-serif;
+  font-family: 'Myriad Pro', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+  // min-height: 100%;
+
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  color: var(--text);
+  line-height: 1;
+  background: var(--bg);
+  scroll-behavior: smooth;
+  caret-color: var(--primary);
+  transition: background-color var(--duration) var(--curve);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  border: none;
+  outline: none;
+  background-color: initial;
+}

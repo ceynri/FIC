@@ -1,6 +1,21 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <h1>Welcome to Your Vue.js App</h1>
+    <Welcome />
   </div>
 </template>
+
+<script>
+import Welcome from '@/components/Welcome.vue';
+
+export default {
+  components: {
+    Welcome,
+  },
+};
+</script>
+
+<style scoped>
+.home {
+  margin-top: -80px;
+}
+</style>

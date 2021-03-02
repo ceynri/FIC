@@ -5,11 +5,13 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    cssVars: {},
   },
   mutations: {
+    setState(state, payload) {
+      state[payload.state] = payload.value;
+    },
   },
-  actions: {
-  },
-  modules: {
-  },
+  actions: {},
+  modules: {},
 });

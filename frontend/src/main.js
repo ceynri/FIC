@@ -1,7 +1,13 @@
 import Vue from 'vue';
-import App from './App.vue';
+
 import router from './router';
 import store from './store';
+import './mixin';
+import './plugins';
+
+import App from './App.vue';
+
+import '@/styles/base.scss';
 
 Vue.config.productionTip = false;
 

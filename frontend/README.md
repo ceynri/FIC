@@ -1,24 +1,45 @@
-# fic
+# FIC 前端模块
 
-## Project setup
-```
+## 开发项目
+
+安装依赖：
+
+```sh
 npm install
 ```
 
-### Compiles and hot-reloads for development
-```
+启动 vue-cli 热更新开发服务：
+
+```sh
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
+打开 `127.0.0.1:8080` 即可预览页面
 
-### Lints and fixes files
-```
-npm run lint
-```
+---
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 草稿
+
+### 应用的形式
+
+#### 算法验证演示类
+
+- 用户输入特定尺寸特定内容的人脸图像
+- 分别给出压缩、重建后的结果
+- 给出过程化的结果
+- 分别指示 base layer 与 enhancement layer 的效果
+- 给出相关的指标与参数
+- 可给出横向对比结果
+  - enhancement layer 使用 JPEG 等算法
+  - 纯 JPEG / JPEG 2000 / BPG
+
+#### 实际应用类
+
+- 用户输入任意图片
+- 给出压缩结果
+- 允许用户调节 bpp
+
+#### 其他功能
+
+- 支持图片裁剪
+- 人脸识别
