@@ -8,7 +8,18 @@ from facenet_pytorch import InceptionResnetV1
 from DeepRcon import DRcon
 # from bit_estimate import BitEstimator
 
+def reload():
+    #转旧版本pth
+    pth = './enhancement_epoch_9.pth'
+    checkpoint = torch.load(pth)
+    codec = ImageCompressor().eval()
+    codec = codec.cuda()
+    codec = nn.DataParallel(codec).cuda()
+    codec.load_state_dict(checkpoint)
+    torch.save(codec.state_dict(), "./enhanceLayer.pth", _use_new_zipfile_serialization=False)
+
 if __name__ == "__main__":
+    #reload()
     resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda()
     dataset = dataset()
     dl = DataLoader(
