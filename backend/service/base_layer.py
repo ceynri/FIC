@@ -1,11 +1,14 @@
 from torch import nn
-# It is worth mentioning here that
-# the DconvOP is composed of a series procedures,
-# including de-convolution layer, batchnormalization layer
-# and ReLU activation (the activation function of the last layer is Tanh).
 
 
 class BaseLayer(nn.Module):
+    '''
+    It is worth mentioning here that
+    the DconvOP is composed of a series procedures,
+    including de-convolution layer, batchnormalization layer
+    and ReLU activation (the activation function of the last layer is Tanh).
+    '''
+
     def __init__(self):
         super(BaseLayer, self).__init__()
         # DconvOp

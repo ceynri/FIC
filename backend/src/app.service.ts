@@ -16,7 +16,7 @@ export class AppService {
 
   getPath(file): string {
     const date = moment().format('YYYY-MM-DD');
-    return path.join(this.basePath,`./${date}/${file.originalname}`);
+    return path.join(this.basePath, `./${date}/${file.originalname}`);
   }
 
   uploadFile(file, storagePath = '') {
@@ -30,8 +30,8 @@ export class AppService {
       writeStream.on('drain', () => {
         console.debug('done');
         resolve(true);
-      })
-    })
+      });
+    });
   }
 
   async demoProcess(file) {
@@ -50,14 +50,20 @@ export class AppService {
           }
           console.log(`stdout: ${stdout}`);
           console.log(`stderr: ${stderr}`);
-          resolve(stdout);
+
+          const fullName = file.originalname;
+          const name = fullName.slice(0, fullName.lastIndexOf('.'));
+          const ext = fullName.slice(fullName.lastIndexOf('.'));
+          resolve({
+            output: `http://127.0.0.1:3000/assets/result/${name}_output${ext}`,
+          });
         },
       );
-  
+
       workerProcess.on('exit', (code) => {
         console.log(`子进程已退出，退出码 ${code}`);
-        resolve(code);
+        // resolve(code);
       });
-    })
+    });
   }
 }
