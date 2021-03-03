@@ -29,7 +29,7 @@ class dataset(Dataset):
         for pdir in track(list(self.path.glob('*/*.jpg'))):
             # use path index image
             self.image_files.append(str(pdir))
-        print('finish loading')
+        #print('finish loading')
 
     def __len__(self):
         return (len(self.image_files))

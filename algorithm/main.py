@@ -61,23 +61,25 @@ if __name__ == '__main__':
 
     # FaceNet for extracting features
     resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda()
-    resnet = nn.DataParallel(resnet, list(range(gpu_num)))
+    #resnet = nn.DataParallel(resnet, list(range(gpu_num)))
+    resnet = nn.DataParallel(resnet, [0,1,2,4,5,6,7])
 
     # reconstruct face by feature
     Base = DRcon().eval()
     Base = Base.cuda()
-    Base = nn.DataParallel(Base, list(range(gpu_num)))
+    Base = nn.DataParallel(Base, [0,1,2,4,5,6,7])
     param = torch.load('/data/chenyangrui/save/base_layer.pth')
     Base.load_state_dict(param)
 
     codec = AutoEncoder().cuda()
-    codec = CustomDataParallel(codec)
-    optimizer, aux_optimizer = configure_optimizers(codec, lr=2e-4, aux_lr=2e-4)
+    codec = CustomDataParallel(codec, [0,1,2,4,5,6,7])
+    optimizer, aux_optimizer = configure_optimizers(codec, lr=1e-3, aux_lr=1e-3)
     criterion = RateDistortionLoss(lmbda=1e-2)
     clip_max_norm = 1.0
     out_criterion = {}
 
     for epoch in range(10):
+        print("start train")
         codec.train()
         for i, d in enumerate(dl):
             # BaseLayer
@@ -116,13 +118,14 @@ if __name__ == '__main__':
             aux_loss.backward()
             aux_optimizer.step()
 
-            print(
-                f"Train epoch {epoch}: "
-                f'\tLoss: {out_criterion["loss"].item():.3f} |'
-                f'\tMSE loss: {out_criterion["mse_loss"].item():.3f} |'
-                f'\tBpp loss: {out_criterion["bpp_loss"].item():.2f} |'
-                f"\tAux loss: {aux_loss.item():.2f}"
-            )
+            if i%10==0:
+                print(
+                    f"Train epoch, iter {epoch}, {i}: "
+                    f'\tLoss: {out_criterion["loss"].item():.3f} |'
+                    f'\tMSE loss: {out_criterion["mse_loss"].item():.3f} |'
+                    f'\tBpp loss: {out_criterion["bpp_loss"].item():.2f} |'
+                    f"\tAux loss: {aux_loss.item():.2f}"
+                )
 
         torch.save({
             'epoch': epoch,
