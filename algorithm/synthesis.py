@@ -1,5 +1,5 @@
 import torch.nn as nn
-from GDN import GDN
+from compressai.layers import GDN
 
 
 class Synthesis(nn.Module):
