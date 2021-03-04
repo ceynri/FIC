@@ -46,7 +46,7 @@ def save_compressed_data(feat, tex, name):
 
 
 def load_compressed_data(file_name):
-    with open(file_name, 'wb') as f:
+    with open(file_name, 'rb') as f:
         return pickle.load(f)
 
 
