@@ -35,6 +35,7 @@ base = nn.DataParallel(base).cuda()
 param = torch.load('./data/base_layer.pth')
 base.load_state_dict(param)
 
+# enhancement
 codec = AutoEncoder().eval().cuda()
 codec = CustomDataParallel(codec).cuda()
 c_param = torch.load('./data/enhanceLayer_lamda.pth')
@@ -88,11 +89,9 @@ def demo_process():
         for key, value in result.items():
             file_name = file.name_suffix(key)
             save_image(value, path.join(base_path, file_name))
-            ret_value[key] = f'http://127.0.0.1:1127/assets/{file_name}'
+            ret_value[key] = f'http://127.0.0.1/assets/result/{file_name}'
 
         response = jsonify(ret_value)
-        # 临时跨域
-        response.headers['Access-Control-Allow-Origin'] = '*'
         return response
 
 
