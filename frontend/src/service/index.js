@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseUrl = 'http://fic.ceynri.cn/api';
+const baseUrl = 'http://127.0.0.1:1127';
 
 // eslint-disable-next-line import/prefer-default-export
 export function uploads(file) {
