@@ -52,7 +52,7 @@ if __name__ == '__main__':
     dl = DataLoader(
         dataset=ds,
         num_workers=10,
-        batch_size=256,
+        batch_size=100,
         shuffle=False,
         drop_last=True,
         pin_memory=True,
@@ -62,24 +62,24 @@ if __name__ == '__main__':
     # FaceNet for extracting features
     resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda()
     #resnet = nn.DataParallel(resnet, list(range(gpu_num)))
-    resnet = nn.DataParallel(resnet, [0,1,2,4,5,6,7])
+    resnet = nn.DataParallel(resnet, [0,2])
 
     # reconstruct face by feature
     Base = DRcon().eval()
     Base = Base.cuda()
-    Base = nn.DataParallel(Base, [0,1,2,4,5,6,7])
+    Base = nn.DataParallel(Base, [0,2])
     param = torch.load('/data/chenyangrui/save/base_layer.pth')
     Base.load_state_dict(param)
 
     codec = AutoEncoder().cuda()
-    codec = CustomDataParallel(codec, [0,1,2,4,5,6,7])
+    codec = CustomDataParallel(codec, [0,2])
     optimizer, aux_optimizer = configure_optimizers(codec, lr=1e-3, aux_lr=1e-3)
-    criterion = RateDistortionLoss(lmbda=1e-2)
+    criterion = RateDistortionLoss(lmbda=32)
     clip_max_norm = 1.0
     out_criterion = {}
 
+    print("start train")
     for epoch in range(10):
-        print("start train")
         codec.train()
         for i, d in enumerate(dl):
             # BaseLayer
@@ -100,14 +100,13 @@ if __name__ == '__main__':
             resi = label - data
             Max = torch.max(resi)
             Min = torch.min(resi)
-            x_tex = (resi - Min) / (Max - Min)  # min-max normalization
-            x_tex = x_tex.cuda()
-            decoded = codec(resi)
+            tex_norm = (resi - Min) / (Max - Min)  # min-max normalization
+            tex_norm = tex_norm.cuda()
+            decoded = codec(tex_norm)
             x_hat = decoded["x_hat"]
-            x_rec = (x_hat - Min) / (Max - Min)  # torch.Size([N, 3, 256, 256])
-            x_rec = x_rec.cuda()
+            recon = (Max - Min) * x_hat + Min
 
-            out_criterion = criterion(decoded, label)
+            out_criterion = criterion(decoded, resi, tex_norm, x_hat)
             out_criterion["loss"].backward()
 
             if clip_max_norm > 0:
