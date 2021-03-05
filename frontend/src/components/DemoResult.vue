@@ -6,7 +6,7 @@
       </div>
       <div class="image_info">
         <div class="image_name">input image</div>
-        <div class="image_data_info">{{ data.inputSize }}</div>
+        <div class="image_data_info">10KB</div>
       </div>
     </div>
     <div class="card">
@@ -15,20 +15,20 @@
       </div>
       <div class="image_info">
         <div class="image_name">output image</div>
-        <div class="image_data_info">{{ data.compressedSize }} (Compressed data)</div>
+        <div class="image_data_info">3KB (Compressed data)</div>
         <div class="image_data_info">0.8 bpp</div>
       </div>
     </div>
-    <div class="card">
+    <!-- <div class="card">
       <div class="image_wrapper">
         <img class="image" :src="data.input" alt="jpeg compress" ref="image" />
       </div>
       <div class="image_info">
         <div class="image_name">JPEG image</div>
-        <div class="image_data_info">{{ data.inputSize }}</div>
+        <div class="image_data_info">8KB</div>
         <div class="image_data_info">0.8 bpp</div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

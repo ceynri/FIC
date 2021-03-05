@@ -7,27 +7,17 @@ import numpy as np
 import pickle
 from os import path
 
-
-def bytes_tensor_loader(btye):
-    img_array = np.frombuffer(btye, dtype=np.uint8)
-    cropper = Cropper()
-    img_cropped = cropper.crop(img_array)
-    img = Image.fromarray(img_cropped)
-    loader = transforms.Compose([
-        transforms.Resize((256, 256)),
-        transforms.ToTensor()
-    ])
-    tensor = loader(img).unsqueeze(0)
-    return tensor
-
-
-def save_compressed_data(feat, tex, file_name):
-    data = {
-        'feat': feat,
-        'tex': tex,
-    }
-    with open(file_name, 'wb') as f:
-        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+# def bytes_tensor_loader(btye):
+#     img_array = np.frombuffer(btye, dtype=np.uint8)
+#     cropper = Cropper()
+#     img_cropped = cropper.crop(img_array)
+#     img = Image.fromarray(img_cropped)
+#     loader = transforms.Compose([
+#         transforms.Resize((256, 256)),
+#         transforms.ToTensor()
+#     ])
+#     tensor = loader(img).unsqueeze(0)
+#     return tensor
 
 
 class File:
@@ -62,6 +52,15 @@ class File:
 
     def name_suffix(self, suffix):
         return f'{self.name}_{suffix}{self.ext}'
+
+
+def save_compressed_data(feat, tex, file_name):
+    data = {
+        'feat': feat,
+        'tex': tex,
+    }
+    with open(file_name, 'wb') as f:
+        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
 
 def tensor_normalize(tensor):

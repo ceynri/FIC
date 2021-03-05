@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseUrl = 'http://127.0.0.1:1127';
+const baseUrl = 'http://127.0.0.1/api';
 
 // eslint-disable-next-line import/prefer-default-export
 export function uploads(file) {
