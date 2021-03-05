@@ -17,7 +17,7 @@ import Uploader from '@/components/Uploader.vue';
 import DemoOptions from '@/components/DemoOptions.vue';
 import DemoResult from '@/components/DemoResult.vue';
 
-// import { demoProcess } from '@/service';
+import { demoProcess } from '@/service';
 
 export default {
   data() {
@@ -54,23 +54,24 @@ export default {
     },
     async process() {
       try {
-        // const res = await demoProcess(this.image.rawFile);
-        // console.log(res);
+        const res = await demoProcess(this.image.rawFile);
+        console.debug('demoProcess', res);
+        this.result = res;
         // mock
-        this.result = {
-          raw: 'https://i.loli.net/2021/02/24/6cwenlBikqALFvg.png',
-          rawResolution: '123x234',
-          rawSize: '123KB',
-          input: 'https://i.loli.net/2021/02/24/YC7V5BAeU1poyDv.png',
-          inputSize: '40KB',
-          feat: 'https://i.loli.net/2021/02/24/HatRnmOZX2Aqpl5.png',
-          featSize: '128B',
-          resi: 'https://i.loli.net/2021/02/24/KYLRkxztadmPwXW.png',
-          resiSize: '10KB',
-          compressedData: '[Blob Object]',
-          compressedSize: '11KB',
-          output: 'https://i.loli.net/2021/02/24/MsGY1ExF9Ktkmal.png',
-        };
+        // this.result = {
+        //   raw: 'https://i.loli.net/2021/02/24/6cwenlBikqALFvg.png',
+        //   rawResolution: '123x234',
+        //   rawSize: '123KB',
+        //   input: 'https://i.loli.net/2021/02/24/YC7V5BAeU1poyDv.png',
+        //   inputSize: '40KB',
+        //   feat: 'https://i.loli.net/2021/02/24/HatRnmOZX2Aqpl5.png',
+        //   featSize: '128B',
+        //   resi: 'https://i.loli.net/2021/02/24/KYLRkxztadmPwXW.png',
+        //   resiSize: '10KB',
+        //   compressedData: '[Blob Object]',
+        //   compressedSize: '11KB',
+        //   output: 'https://i.loli.net/2021/02/24/MsGY1ExF9Ktkmal.png',
+        // };
       } catch (e) {
         console.error('demo process error', e);
       }
