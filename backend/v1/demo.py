@@ -1,15 +1,11 @@
 from os import path
 import sys
-import numpy as np
 import pickle
 
 import torch
 from torch import nn
 from torchvision import transforms
 from torchvision.utils import save_image
-
-# from torch.utils.data import DataLoader
-# from dataset import dataset
 
 from PIL import Image
 from autocrop import Cropper
@@ -18,7 +14,6 @@ from facenet_pytorch import InceptionResnetV1
 
 from base_layer import BaseLayer
 from enhancement_layer import ImageCompressor
-
 
 base_path = '/data/fic/result'
 

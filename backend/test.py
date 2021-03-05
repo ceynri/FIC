@@ -12,27 +12,9 @@ from torchvision.utils import save_image
 
 from endtoend import AutoEncoder
 from DeepRcon import DRcon
+from utils import save_compressed_data, tensor_normalize
 
-base_path = '../public/result'
-
-
-def reload(codec):
-    torch.save(codec.encoder.state_dict(), './data/encoder_param.pth')
-    torch.save(codec.decoder.state_dict(), './data/decoder_param.pth')
-    torch.save(
-        codec.entropy_bottleneck.state_dict(),
-        './data/entropy_bottleneck_param.pth'
-    )
-    return
-
-
-def save_compressed_data(feat, tex, file_name):
-    data = {
-        'feat': feat,
-        'tex': tex,
-    }
-    with open(file_name, 'wb') as f:
-        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+base_path = './public/result'
 
 
 class File:
@@ -58,8 +40,8 @@ class File:
             self.fic = pickle.load(f)
             return self.fic
 
-    def prefix_name(self, prefix):
-        return f'{file.name}{prefix}{file.ext}'
+    def name_suffix(self, suffix):
+        return f'{self.name}{suffix}{self.ext}'
 
 
 class CustomDataParallel(nn.DataParallel):
@@ -108,16 +90,24 @@ if __name__ == '__main__':
         # EnhancementLayer
         x_resi = label - x_feat
         x_resi = x_resi.cuda()
+        # x_recon = codec(x_resi)
         tex = codec.compress(x_resi)
         x_recon = codec.decompress(tex)
+        x_output = x_feat + x_recon
+
+        x_resi_norm = tensor_normalize(x_resi)
+        x_recon_norm = tensor_normalize(x_recon)
 
         save_path_name = path.join(base_path, f'{file.name}.fic')
         save_compressed_data(feat, tex, save_path_name)
 
-        result = [[label, file.prefix_name('_input')],
-                  [x_feat, file.prefix_name('_feat')],
-                  [x_resi, file.prefix_name('_resi')],
-                  [x_recon, file.prefix_name('_recon')]]
+        result = [[label, file.name_suffix('_input')],
+                  [x_feat, file.name_suffix('_feat')],
+                  [x_resi, file.name_suffix('_resi')],
+                  [x_recon, file.name_suffix('_recon')],
+                  [x_resi_norm, file.name_suffix('_resi_norm')],
+                  [x_recon_norm, file.name_suffix('_recon_norm')],
+                  [x_output, file.name_suffix('_output')]]
         for item in result:
             save_image(item[0], path.join(base_path, item[1]))
 
@@ -129,5 +119,5 @@ if __name__ == '__main__':
         x_recon = codec.decompress(tex)
         save_image(
             x_feat + x_recon,
-            path.join(base_path, file.prefix_name('_decompressed'))
+            path.join(base_path, file.name_suffix('_decompressed'))
         )
