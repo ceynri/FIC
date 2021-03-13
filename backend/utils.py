@@ -2,6 +2,7 @@ from io import BytesIO
 from PIL import Image
 from autocrop import Cropper
 import torch
+from torch import nn
 from torchvision import transforms
 import numpy as np
 import pickle
@@ -50,8 +51,10 @@ class File:
         self.tensor = tensor
         return tensor
 
-    def name_suffix(self, suffix):
-        return f'{self.name}_{suffix}{self.ext}'
+    def name_suffix(self, suffix: str, ext: str = ''):
+        if ext == '':
+            ext = self.ext
+        return f'{self.name}_{suffix}{ext}'
 
 
 def save_compressed_data(feat, tex, file_name):
@@ -61,9 +64,36 @@ def save_compressed_data(feat, tex, file_name):
     }
     with open(file_name, 'wb') as f:
         pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+    return file_name
 
 
-def tensor_normalize(tensor):
-    max = torch.max(tensor)
-    min = torch.min(tensor)
-    return (tensor - min) / (max - min)
+def tensor_normalize(tensor, intervals=None, mode="normal"):
+    min, max = 0, 0
+    if intervals is None:
+        min, max = torch.min(tensor), torch.max(tensor)
+    else:
+        min, max = intervals
+    if mode != 'anti':
+        return ((tensor - min) / (max - min)), (min, max)
+    return tensor * (max - min) + min
+
+
+class CustomDataParallel(nn.DataParallel):
+    """Custom DataParallel to access the module methods."""
+    def __getattr__(self, key):
+        try:
+            return super().__getattr__(key)
+        except AttributeError:
+            return getattr(self.module, key)
+
+
+def load_image_array(path):
+    # 使用PIL读取
+    img = Image.open(path)  # PIL.Image.Image对象
+    return np.array(img, dtype=np.int16)
+
+
+def tensor_to_np(tensor):
+    img = tensor.mul(255)
+    img = img.cpu().numpy().squeeze(0).transpose((1, 2, 0)).astype(np.int16)
+    return img
