@@ -7,6 +7,7 @@ from endtoend import AutoEncoder
 from RateDistortionLoss import RateDistortionLoss
 from facenet_pytorch import InceptionResnetV1
 from DeepRcon import DRcon
+import cv2
 
 def configure_optimizers(net, lr, aux_lr):
     """Separate parameters for the main optimizer and the auxiliary optimizer.
@@ -47,13 +48,15 @@ class CustomDataParallel(nn.DataParallel):
             return getattr(self.module, key)
 
 if __name__ == '__main__':
-    gpu_num = torch.cuda.device_count()
+    # isload = True
+    # gpu_num = torch.cuda.device_count()
+    cv2.ocl.setUseOpenCL(False)
     ds = dataset('/data/chenyangrui/train')
     dl = DataLoader(
         dataset=ds,
         num_workers=10,
         batch_size=100,
-        shuffle=False,
+        shuffle=True,
         drop_last=True,
         pin_memory=True,
         collate_fn = collate
@@ -74,12 +77,21 @@ if __name__ == '__main__':
     codec = AutoEncoder().cuda()
     codec = CustomDataParallel(codec, [0,2])
     optimizer, aux_optimizer = configure_optimizers(codec, lr=1e-3, aux_lr=1e-3)
-    criterion = RateDistortionLoss(lmbda=32)
+    criterion = RateDistortionLoss(lmbda=1024)
     clip_max_norm = 1.0
     out_criterion = {}
+    epoch = 0
+
+    # if isload:
+    #     checkpoint = torch.load("/data/chenyangrui/save/enhanceLayer_checkpoints")
+    #     codec.load_state_dict(checkpoint['model_state_dict'])
+    #     optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+    #     aux_optimizer.load_state_dict(checkpoint["aux_optimizer_state_dict"])
+    #     epoch = checkpoint["epoch"]
+
 
     print("start train")
-    for epoch in range(10):
+    while(epoch < 10):
         codec.train()
         for i, d in enumerate(dl):
             # BaseLayer
@@ -125,7 +137,7 @@ if __name__ == '__main__':
                     f'\tBpp loss: {out_criterion["bpp_loss"].item():.2f} |'
                     f"\tAux loss: {aux_loss.item():.2f}"
                 )
-
+        epoch += 1
         torch.save({
             'epoch': epoch,
             'model_state_dict': codec.state_dict(),
