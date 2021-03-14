@@ -9,6 +9,7 @@ from PIL import Image
 from torchvision import transforms
 from torchvision.utils import save_image
 
+sys.path.append(path.dirname(path.dirname(path.realpath(__file__))))
 from gan.network import GAN
 
 base_path = './test'

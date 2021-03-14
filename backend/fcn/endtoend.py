@@ -1,6 +1,7 @@
-from analysis import Analysis
-from synthesis import Synthesis
 from compressai.models import CompressionModel
+
+from .analysis import Analysis
+from .synthesis import Synthesis
 
 
 class AutoEncoder(CompressionModel):

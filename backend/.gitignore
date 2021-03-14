@@ -4,7 +4,9 @@
 /public/temp
 /public/result
 /start.sh
-/test
+/test/*.jpg
+/test/*.bmp
+/test/result
 
 # too large to github
 /data/*.pth
