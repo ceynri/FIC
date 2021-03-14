@@ -57,7 +57,7 @@ class File:
         return f'{self.name}_{suffix}{ext}'
 
 
-def save_compressed_data(feat, tex, file_name):
+def save_fic(feat, tex, file_name):
     data = {
         'feat': feat,
         'tex': tex,
@@ -93,7 +93,7 @@ def load_image_array(path):
     return np.array(img, dtype=np.int16)
 
 
-def tensor_to_np(tensor):
+def tensor_to_array(tensor):
     img = tensor.mul(255)
     img = img.cpu().numpy().squeeze(0).transpose((1, 2, 0)).astype(np.int16)
     return img

@@ -13,8 +13,8 @@ from DeepRcon import DRcon
 from endtoend import AutoEncoder
 from eval_index import psnr, ssim
 from utils import (
-    CustomDataParallel, File, load_image_array, save_compressed_data,
-    tensor_normalize, tensor_to_np
+    CustomDataParallel, File, load_image_array, save_fic, tensor_normalize,
+    tensor_to_array
 )
 
 app = Flask(__name__)
@@ -111,9 +111,9 @@ def demo_process():
         x_output = x_feat + x_recon
 
         # 保存压缩数据
-        save_path = get_path(f'{file.name}.fic')
-        save_compressed_data(feat, tex, save_path)
-        compressed_size = path.getsize(save_path)
+        fic_path = get_path(f'{file.name}.fic')
+        save_fic(feat, tex, fic_path)
+        fic_size = path.getsize(fic_path)
 
         # 待保存图片
         result = {
@@ -125,31 +125,53 @@ def demo_process():
             'recon_norm': x_recon_norm,
             'output': x_output,
         }
-        x_input_arr = tensor_to_np(x_input)
-        x_output_arr = tensor_to_np(x_output)
+
         # 其他数据
+        x_input_arr = tensor_to_array(x_input)
+        x_output_arr = tensor_to_array(x_output)
         ret = {
+            'image': {},
             'data': get_url(f'{file.name}.fic'),
-            'compressed_size': compressed_size,
-            'psnr': psnr(x_input_arr, x_output_arr),
-            'ssim': ssim(x_input_arr, x_output_arr),
+            'size': {},
+            'eval': {
+                'fic_psnr': psnr(x_input_arr, x_output_arr),
+                'fic_ssim': ssim(x_input_arr, x_output_arr),
+            },
         }
         for key, value in result.items():
             # 保存图片
-            file_name = file.name_suffix(key, '.bmp')
+            file_name = file.name_suffix(key, ext='.bmp')
             file_path = get_path(file_name)
             save_image(value, file_path)
             # 返回图片url链接
-            ret[key] = get_url(file_name)
+            ret['image'][key] = get_url(file_name)
+
+        # 计算压缩率
+        input_path = get_path(file.name_suffix('input', ext='.bmp'))
+        input_size = path.getsize(input_path)
+        fic_compression_ratio = fic_size / input_size
+
+        ret['size'] = {
+            'fic': fic_size,
+            'output': fic_size,
+            'input': input_size,
+        }
+        ret['eval']['fic_compression_ratio'] = fic_compression_ratio
 
         # jpeg（临时）
-        file_name = file.name_suffix('jpeg', '.jpg')
-        file_path = get_path(file_name)
-        save_image(x_output, file_path)
-        ret['jpeg'] = get_url(file_name)
-        jpeg_arr = load_image_array(file_path)
-        ret['jpeg_psnr'] = psnr(x_input_arr, jpeg_arr)
-        ret['jpeg_ssim'] = ssim(x_input_arr, jpeg_arr)
+        jpeg_name = file.name_suffix('jpeg', ext='.jpg')
+        jpeg_path = get_path(jpeg_name)
+        save_image(x_input, jpeg_path)
+
+        ret['image']['jpeg'] = get_url(jpeg_name)
+        jpeg_arr = load_image_array(jpeg_path)
+        ret['eval']['jpeg_psnr'] = psnr(x_input_arr, jpeg_arr)
+        ret['eval']['jpeg_ssim'] = ssim(x_input_arr, jpeg_arr)
+
+        jpeg_size = path.getsize(jpeg_path)
+        ret['size']['jpeg'] = jpeg_size
+        jpeg_compression_ratio = jpeg_size / input_size
+        ret['eval']['jpeg_compression_ratio'] = jpeg_compression_ratio
 
         # 响应请求
         response = jsonify(ret)
@@ -184,7 +206,7 @@ def demo_process():
 
 #         # 保存压缩数据
 #         save_path = get_path(f'{file.name}.fic')
-#         save_compressed_data(feat, tex, save_path)
+#         save_fic(feat, tex, save_path)
 
 #         # 保存图片和url路径
 #         result = {

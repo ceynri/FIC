@@ -12,7 +12,7 @@ from torchvision.utils import save_image
 
 from endtoend import AutoEncoder
 from DeepRcon import DRcon
-from utils import save_compressed_data, tensor_normalize
+from utils import save_fic, tensor_normalize
 
 base_path = './public/result'
 
@@ -99,7 +99,7 @@ if __name__ == '__main__':
         x_recon_norm = tensor_normalize(x_recon)
 
         save_path_name = path.join(base_path, f'{file.name}.fic')
-        save_compressed_data(feat, tex, save_path_name)
+        save_fic(feat, tex, save_path_name)
 
         result = [[label, file.name_suffix('_input')],
                   [x_feat, file.name_suffix('_feat')],
