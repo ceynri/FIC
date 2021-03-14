@@ -1,9 +1,10 @@
-import torch
-from torch.utils.data import DataLoader
-from  dataset import dataset
-from torch.utils.data.dataloader import default_collate
-from network import GAN
 import cv2
+import torch
+from dataset import dataset
+from torch.utils.data import DataLoader
+from torch.utils.data.dataloader import default_collate
+
+from .network import GAN
 
 
 def collate(batch):
@@ -14,6 +15,7 @@ def collate(batch):
             if len(batch) < 16:
                 batch.append(batch[i])
     return default_collate(batch)
+
 
 if __name__ == '__main__':
     cv2.ocl.setUseOpenCL(False)
@@ -31,7 +33,7 @@ if __name__ == '__main__':
     epoch = 0
 
     print("start train")
-    while(epoch < 30):
+    while (epoch < 30):
         net.train()
         for i, d in enumerate(ds):
             d = d.cuda(2)
@@ -57,5 +59,3 @@ if __name__ == '__main__':
             'D_loss': net.loss_D
         }, '/data/chenyangrui/save/BaseLayer_checkpoints')
         torch.save(net.state_dict(), "/data/chenyangrui/save/BaseLayer.pth")
-
-

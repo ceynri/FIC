@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
-from generator import Generator
-from discriminator import Discriminator
-from Ganloss import GANloss
 from pytorch_msssim import ssim
+
+from .discriminator import Discriminator
+from .Ganloss import GANloss
+from .generator import Generator
 
 
 class GAN(nn.Module):
