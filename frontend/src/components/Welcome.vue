@@ -8,8 +8,8 @@
           learning.
         </div>
         <div class="btn_container">
-          <router-link class="try_btn" to="demo">Try now!</router-link>
-          <router-link class="more_btn" to="compress">Get Started</router-link>
+          <router-link class="try_btn btn" to="demo">Try now!</router-link>
+          <router-link class="more_btn btn" to="compress">Compress</router-link>
         </div>
       </section>
       <IconBase class="logo" icon-name="logo" width="250" height="250">
@@ -65,14 +65,14 @@ export default {
   .btn_container {
     margin-top: 26px;
 
-    .try_btn,
-    .more_btn {
+    .btn {
       display: inline-block;
       height: 50px;
       width: 140px;
       border-radius: 25px;
       text-align: center;
-      font-size: 20px;
+      white-space: nowrap;
+      font-size: 18px;
       padding: 16px;
 
       transition: filter var(--duration), box-shadow var(--duration);
