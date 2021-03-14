@@ -5,3 +5,6 @@
 /public/result
 /start.sh
 /test
+
+# too large to github
+/data/b_layer_gan.pth
