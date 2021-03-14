@@ -1,6 +1,7 @@
 import torch.nn as nn
-from encoder import Encoder
-from decoder import Decoder
+from .encoder import Encoder
+from .decoder import Decoder
+
 
 class Generator(nn.Module):
     def __init__(self):

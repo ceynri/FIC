@@ -9,9 +9,9 @@ from PIL import Image
 from torchvision import transforms
 from torchvision.utils import save_image
 
-from network import GAN
+from gan.network import GAN
 
-base_path = '../test'
+base_path = './test'
 
 
 class File:
@@ -52,7 +52,7 @@ class CustomDataParallel(nn.DataParallel):
 
 if __name__ == '__main__':
     net = GAN(train=True).cuda()
-    param = torch.load('../data/b_layer_gan_3.pth', map_location='cuda:0')
+    param = torch.load('./data/b_layer_gan_3.pth', map_location='cuda:0')
     net.load_state_dict(param)
 
     file_path = sys.argv[1]
