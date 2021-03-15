@@ -6,8 +6,6 @@ import torch
 from PIL import Image
 from skimage.metrics import structural_similarity
 
-from utils import load_image_array
-
 
 def psnr(img1, img2):
     # 直接相减，求差值
@@ -57,6 +55,8 @@ def ssim(img1, img2):
 #     return ssim_val
 
 if __name__ == "__main__":
+    from utils import load_image_array
+
     input = load_image_array(
         '/home/ceynri/workspace/FIC/backend/public/result/xiaozhan_input.bmp'
     )
