@@ -16,6 +16,7 @@ from utils import (
     CustomDataParallel, File, load_image_array, save_fic, tensor_normalize,
     tensor_to_array
 )
+from utils.jpeg import jpeg_compress
 
 app = Flask(__name__)
 # CORS(app, supports_credentials=True)
@@ -158,10 +159,10 @@ def demo_process():
         }
         ret['eval']['fic_compression_ratio'] = fic_compression_ratio
 
-        # jpeg（临时）
+        # jpeg对照组处理
         jpeg_name = file.name_suffix('jpeg', ext='.jpg')
         jpeg_path = get_path(jpeg_name)
-        save_image(x_input, jpeg_path)
+        jpeg_compress(input_path, jpeg_path, size=fic_size)
 
         ret['image']['jpeg'] = get_url(jpeg_name)
         jpeg_arr = load_image_array(jpeg_path)

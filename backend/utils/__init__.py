@@ -25,10 +25,7 @@ class File:
     def __init__(self, file):
         self.raw_file = file
         self.btyes = file.read()
-        split_name = path.splitext(file.filename)
-        self.name = split_name[0]
-        self.ext = split_name[1]
-        # self.name, self.ext = split_name
+        self.name, self.ext = path.splitext(file.filename)
 
     def load_tensor(self):
         stream = BytesIO(self.btyes)
@@ -67,6 +64,18 @@ def save_fic(feat, tex, file_name):
     return file_name
 
 
+def load_image_array(path):
+    # 使用PIL读取
+    img = Image.open(path)  # PIL.Image.Image对象
+    return np.array(img, dtype=np.int16)
+
+
+def tensor_to_array(tensor):
+    img = tensor.mul(255)
+    img = img.cpu().numpy().squeeze(0).transpose((1, 2, 0)).astype(np.int16)
+    return img
+
+
 def tensor_normalize(tensor, intervals=None, mode="normal"):
     min, max = 0, 0
     if intervals is None:
@@ -85,15 +94,3 @@ class CustomDataParallel(nn.DataParallel):
             return super().__getattr__(key)
         except AttributeError:
             return getattr(self.module, key)
-
-
-def load_image_array(path):
-    # 使用PIL读取
-    img = Image.open(path)  # PIL.Image.Image对象
-    return np.array(img, dtype=np.int16)
-
-
-def tensor_to_array(tensor):
-    img = tensor.mul(255)
-    img = img.cpu().numpy().squeeze(0).transpose((1, 2, 0)).astype(np.int16)
-    return img
