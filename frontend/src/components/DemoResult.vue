@@ -24,9 +24,7 @@
       <div class="contrast_info card shadow">
         <div class="info_line clickable" @click="select('output')">
           <div class="selector" :class="{ selected: selectedImageName == 'output' }"></div>
-          <div class="image_name_wrapper">
-            <div class="image_name">Our method</div>
-          </div>
+          <div class="image_name">Our method</div>
           <div class="image_info">
             <div>{{ sizeFormat(data.size.fic) }} (compress data)</div>
             <div>compression ratio: {{ percentFormat(data.eval.fic_compression_ratio) }}</div>
@@ -37,9 +35,7 @@
         <div class="divider"></div>
         <div class="info_line clickable" @click="select('jpeg')">
           <div class="selector" :class="{ selected: selectedImageName == 'jpeg' }"></div>
-          <div class="image_name_wrapper">
-            <div class="image_name">JPEG</div>
-          </div>
+          <div class="image_name">JPEG</div>
           <div class="image_info">
             <div>{{ sizeFormat(data.size.jpeg) }}</div>
             <div>compression ratio: {{ percentFormat(data.eval.jpeg_compression_ratio) }}</div>
@@ -49,7 +45,7 @@
         </div>
       </div>
     </div>
-    <div class="card_wrapper">
+    <div class="card_wrapper" v-viewer="{ filter: excludeIcon }">
       <!-- TODO 提供下载/查看原图功能 -->
       <ImageCard class="card clickable" :src="image.input" name="input"></ImageCard>
       <ImageCard class="card clickable" :src="image.feat" name="feature"></ImageCard>
@@ -67,7 +63,13 @@
         :src="image.recon_norm"
         name="normalize reconstruction"
       ></ImageCard>
-      <ImageCard class="card clickable" name="compress data" src="/assets/archive.png"></ImageCard>
+      <ImageCard
+        class="card clickable"
+        name="compress data"
+        src="/assets/archive.png"
+        is-icon
+        @click.native="downloadFic"
+      ></ImageCard>
     </div>
   </div>
 </template>
@@ -100,12 +102,24 @@ export default {
       };
     },
   },
+  mounted() {
+    const cardWrapper = this.$el.querySelector('.card_wrapper');
+    cardWrapper.addEventListener('ready', () => {
+      this.viewer = cardWrapper.$viewer;
+    });
+  },
   methods: {
     changeImage(type) {
       this.hidden = type === 'in';
     },
     select(name) {
       this.selectedImageName = name;
+    },
+    excludeIcon(e) {
+      return ![...e.classList].includes('icon');
+    },
+    downloadFic() {
+      window.open(this.data.data);
     },
   },
   components: {
@@ -171,23 +185,36 @@ export default {
       }
 
       .selector {
-        height: 14px;
-        width: 14px;
-        margin: 8px 20px 8px 0;
-        border: 1px dotted var(--border2);
-        // mix-blend-mode: exclusion;
-        border-radius: 50%;
-        box-sizing: border-box;
-        transition: all var(--duration);
+        width: 40px;
+        height: 26px;
         flex: none;
+        position: relative;
 
-        &.selected {
+        &:before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+
+          height: 8px;
+          width: 8px;
+          border: 1px solid var(--border);
+          // mix-blend-mode: exclusion;
+          box-sizing: border-box;
+          border-radius: 50%;
+          transition: all var(--duration);
+        }
+
+        &.selected:before {
+          height: 14px;
+          width: 14px;
           border: none;
           background: var(--primary);
         }
       }
 
-      .image_name_wrapper {
+      .image_name {
         color: var(--text);
         font-size: 22px;
         line-height: 1.2;

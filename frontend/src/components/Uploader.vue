@@ -1,7 +1,7 @@
 <template>
   <div class="uploader">
     <div class="container_border"></div>
-    <overlay-scrollbars class="image_list" v-viewer="viewerOptions" ref="imageList">
+    <overlay-scrollbars class="image_list" v-viewer>
       <div class="image_item" v-for="(item, i) in value" :key="item.name">
         <div class="image_wrapper">
           <img class="image" v-if="isImage(item.dataUrl)" :src="item.dataUrl" />
@@ -94,12 +94,6 @@ export default {
       fileNameSet: new Set(),
       dragOver: false,
       viewer: null,
-      viewerOptions: {
-        transition: false,
-        toolbar: false,
-        title: false,
-        navbar: false,
-      },
     };
   },
   computed: {

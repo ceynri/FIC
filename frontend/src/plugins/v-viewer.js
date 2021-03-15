@@ -3,3 +3,9 @@ import 'viewerjs/dist/viewer.css';
 import Viewer from 'v-viewer';
 
 Vue.use(Viewer);
+Viewer.setDefaults({
+  transition: false,
+  toolbar: false,
+  title: false,
+  navbar: false,
+});
