@@ -1,6 +1,12 @@
 <template>
   <div class="card shadow">
-    <img class="image" :class="{ reverse: topInfo }" :src="src" :alt="name" ref="image" />
+    <img
+      class="image"
+      :class="{ reverse: topInfo, icon: isIcon }"
+      :src="src"
+      :alt="name"
+      ref="image"
+    />
     <div class="image_info" :class="{ reverse: topInfo }">
       <div class="image_name">{{ name }}</div>
       <div class="image_ext_info"><slot /></div>
@@ -14,6 +20,10 @@ export default {
     name: String,
     src: String,
     topInfo: {
+      type: Boolean,
+      default: false,
+    },
+    isIcon: {
       type: Boolean,
       default: false,
     },
