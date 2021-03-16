@@ -4,10 +4,11 @@
     <overlay-scrollbars class="image_list" v-viewer>
       <div class="image_item" v-for="(item, i) in value" :key="item.name">
         <div class="image_wrapper">
+          <img v-if="type == 'image' && !item.result" class="image clickable" :src="item.dataUrl" />
           <img
-            v-if="(type == 'image' && !item.result) || (type == 'fic' && item.result)"
+            v-else-if="type == 'fic' && item.result"
             class="image clickable"
-            :src="item.dataUrl"
+            :src="item.result.data"
           />
           <IconBase v-else width="60px" height="60px" icon-name="archive">
             <ArchiveIcon />
@@ -29,15 +30,16 @@
           </div>
         </div>
         <div class="btn_wrapper">
-          <button
+          <a
             v-if="item.result && item.result.data"
             class="btn clickable"
-            @click="downloadResult(item.result.data)"
+            :href="item.result.data"
+            :download="item.result.name"
           >
             <IconBase width="20px" height="20px" icon-name="download">
               <DownloadIcon />
             </IconBase>
-          </button>
+          </a>
           <button
             v-if="(type == 'image' && !item.result) || (type == 'fic' && item.result)"
             class="btn clickable"
@@ -91,7 +93,6 @@ import CancelIcon from '@/components/icons/CancelIcon.vue';
 import AddIcon from '@/components/icons/AddIcon.vue';
 
 import readFile from '@/utils/readFile';
-import { uploads } from '@/service';
 
 export default {
   props: {
@@ -169,7 +170,7 @@ export default {
       this.preventFn(e);
       const files = e.dataTransfer?.files;
       if (!this.multiple && files.length > 1) {
-        alert('Please upload only one image');
+        console.error('Please upload only one image');
         return;
       }
       this.addFiles(files);
@@ -190,7 +191,7 @@ export default {
         if (this.fileNameSet.has(file.name)) {
           // TODO 可改为 Bubbling prompt
           console.warn(`Duplicate file：${file.name}`);
-          // alert(`Duplicate file：${file.name}`);
+          // console.error(`Duplicate file：${file.name}`);
           return;
         }
         this.fileNameSet.add(file.name);
@@ -214,20 +215,9 @@ export default {
           console.debug('fileList:', this.value);
         } catch (e) {
           console.error(e);
-          alert(`${file.name}上传失败，请重新上传`);
+          console.error(`${file.name}上传失败，请重新上传`);
         }
       });
-    },
-    /**
-     * 上传文件
-     */
-    async uploadFile(file) {
-      try {
-        const res = await uploads(file);
-        console.log(res);
-      } catch (e) {
-        console.error(e);
-      }
     },
     /**
      * 删除特定的文件
@@ -245,18 +235,6 @@ export default {
         return;
       }
       this.viewer.view(i);
-    },
-    /**
-     * 判断 dataUrl 字符串是否为图像
-     */
-    isImage(dataUrl) {
-      return dataUrl && dataUrl.startsWith('data:image');
-    },
-    /**
-     * 下载结果
-     */
-    downloadResult(data) {
-      window.open(data);
     },
     /**
      * 禁止原生事件避免触发打开图片的原生行为

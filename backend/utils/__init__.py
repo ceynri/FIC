@@ -24,11 +24,11 @@ from os import path
 class File:
     def __init__(self, file):
         self.raw_file = file
-        self.btyes = file.read()
+        self.bytes = file.read()
         self.name, self.ext = path.splitext(file.filename)
 
     def load_tensor(self):
-        stream = BytesIO(self.btyes)
+        stream = BytesIO(self.bytes)
         img = Image.open(stream)
         img_array = np.array(img)
         # RGB to BGR for cropper
@@ -54,25 +54,35 @@ class File:
         return f'{self.name}_{suffix}{ext}'
 
 
-def save_binary_file(data, file_name):
+def save_binary_file(data: dict, file_name: str):
     with open(file_name, 'wb') as f:
         pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
     return file_name
 
 
-def load_image_array(path):
+def load_binary_file(file, save_path: str = './public/temp/'):
+    save_path = path.join(save_path, file.filename)
+    file.save(save_path)
+    with open(save_path, 'rb') as f:
+        data = pickle.load(f)
+        return data
+
+
+def load_image_array(path: str):
     # 使用PIL读取
     img = Image.open(path)  # PIL.Image.Image对象
     return np.array(img, dtype=np.int16)
 
 
-def tensor_to_array(tensor):
+def tensor_to_array(tensor: torch.Tensor):
     img = tensor.mul(255)
     img = img.cpu().numpy().squeeze(0).transpose((1, 2, 0)).astype(np.int16)
     return img
 
 
-def tensor_normalize(tensor, intervals=None, mode="normal"):
+def tensor_normalize(
+    tensor: torch.Tensor, intervals=None, mode: str = "normal"
+):
     min, max = 0, 0
     if intervals is None:
         min, max = torch.min(tensor), torch.max(tensor)
