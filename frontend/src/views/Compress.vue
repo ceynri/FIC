@@ -41,6 +41,7 @@ export default {
         for (let i = 0; i < this.fileList.length; i += 1) {
           this.fileList[i].result = this.result[i];
         }
+        // Vue不会监听数组对象的更改，故需要调用方法手动触发Vue的监听
         this.fileList.splice(0, 0);
       } catch (e) {
         console.error('compress error', e);

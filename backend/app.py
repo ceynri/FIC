@@ -11,11 +11,11 @@ from torchvision.utils import save_image
 
 from fcn.DeepRcon import DRcon
 from fcn.endtoend import AutoEncoder
-from utils.eval_index import psnr, ssim
 from utils import (
-    CustomDataParallel, File, load_image_array, save_binary_file,
-    tensor_normalize, tensor_to_array
+    CustomDataParallel, File, load_binary_file, load_image_array,
+    save_binary_file, tensor_normalize, tensor_to_array
 )
+from utils.eval_index import psnr, ssim
 from utils.jpeg import jpeg_compress
 
 app = Flask(__name__)
@@ -115,6 +115,7 @@ def demo_process():
             'feat': feat,
             'tex': tex,
             'intervals': intervals,
+            'ext': file.ext,
         }, fic_path)
         fic_size = path.getsize(fic_path)
 
@@ -135,7 +136,6 @@ def demo_process():
         ret = {
             'image': {},
             'data': get_url(f'{file.name}.fic'),
-            'size': {},
             'eval': {
                 'fic_psnr': psnr(x_input_arr, x_output_arr),
                 'fic_ssim': ssim(x_input_arr, x_output_arr),
@@ -190,52 +190,87 @@ def compress():
     ret = []
     for rawfile in files:
         file = File(rawfile)
-        try:
-            with torch.no_grad():
-                # 将二进制转为tensor
-                x_input = file.load_tensor().cuda()
+        with torch.no_grad():
+            # 将二进制转为tensor
+            x_input = file.load_tensor().cuda()
 
-                # 特征提取与重建
-                feat, x_feat = extract_feat(x_input)
+            # 特征提取与重建
+            feat, x_feat = extract_feat(x_input)
 
-                # 残差纹理图
-                x_resi = (x_input - x_feat).cuda()
+            # 残差纹理图
+            x_resi = (x_input - x_feat).cuda()
 
-                # 残差纹理图压缩
-                x_resi_norm, intervals = tensor_normalize(x_resi)
-                x_resi_norm = x_resi_norm.cuda()
-                tex = e_layer.compress(x_resi_norm), intervals
+            # 残差纹理图压缩
+            x_resi_norm, intervals = tensor_normalize(x_resi)
+            x_resi_norm = x_resi_norm.cuda()
+            tex = e_layer.compress(x_resi_norm)
 
-            # 保存压缩数据
-            fic_name = f'{file.name}.fic'
-            fic_path = get_path(fic_name)
-            save_binary_file({
-                'feat': feat,
-                'tex': tex,
-                'intervals': intervals,
-            }, fic_path)
-            fic_size = path.getsize(fic_path)
+        # 保存压缩数据
+        fic_name = f'{file.name}.fic'
+        fic_path = get_path(fic_name)
+        save_binary_file({
+            'feat': feat,
+            'tex': tex,
+            'intervals': intervals,
+            'ext': file.ext,
+        }, fic_path)
+        fic_size = path.getsize(fic_path)
 
-            # 获取原图大小
-            input_path = get_path(file.name_suffix('input', ext='.bmp'))
-            save_image(x_input, input_path)
-            input_size = path.getsize(input_path)
-            fic_compression_ratio = fic_size / input_size
+        # 获取原图大小
+        input_path = get_path(file.name_suffix('input', ext='.bmp'))
+        save_image(x_input, input_path)
+        input_size = path.getsize(input_path)
+        fic_compression_ratio = fic_size / input_size
 
-            # 待返回的结果数据
-            result = {
-                'name': fic_name,
-                'data': get_url(fic_name),
-                'size': fic_size,
-                'compression_ratio': fic_compression_ratio,
-            }
-            ret.append(result)
-        except Exception:
-            ret.append({
-                'name': file.name,
-                'data': '',
-            })
+        # 待返回的结果数据
+        result = {
+            'name': fic_name,
+            'data': get_url(fic_name),
+            'size': fic_size,
+            'compression_ratio': fic_compression_ratio,
+        }
+        ret.append(result)
 
+    # 响应请求
+    response = jsonify(ret)
+    return response
+
+
+@app.route('/decompress', methods=['POST'])
+def decompress():
+    '''批量解压fic文件并返回解压后的图片'''
+
+    # 获取文件对象
+    files = request.files.getlist('files')
+    ret = []
+    for rawfile in files:
+        # 获取fic对象
+        fic = load_binary_file(rawfile)
+        file = File(rawfile)
+        with torch.no_grad():
+
+            # 特征重建
+            x_feat = b_layer(fic['feat'])
+
+            # 纹理压缩数据解压
+            x_recon_norm = e_layer.decompress(fic['tex'])
+            x_recon = tensor_normalize(x_recon_norm, fic['intervals'], 'anti')
+
+        # 获取完整结果图
+        x_output = x_feat + x_recon
+
+        # file_name = file.name_suffix('fic', ext='.bmp')
+        file_name = file.name_suffix('fic', ext=fic['ext'])
+        file_path = get_path(file_name)
+        save_image(x_output, file_path)
+
+        # 待返回的结果数据
+        result = {
+            'name': file_name,
+            'data': get_url(file_name),
+            'size': path.getsize(file_path),
+        }
+        ret.append(result)
     # 响应请求
     response = jsonify(ret)
     return response
