@@ -12,7 +12,7 @@
         </div>
       </header>
     </div>
-    <Uploader v-if="state === 1" v-model="fileList" accept="image/*" :multiple="false" />
+    <Uploader v-if="state === 1" v-model="fileList" type="image" :multiple="false" />
     <DemoOptions v-else-if="state === 2" :image="image" @next="process" />
     <DemoResult v-else :data="result" />
   </section>

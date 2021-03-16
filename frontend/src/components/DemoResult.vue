@@ -200,7 +200,6 @@ export default {
           height: 8px;
           width: 8px;
           border: 1px solid var(--border);
-          // mix-blend-mode: exclusion;
           box-sizing: border-box;
           border-radius: 50%;
           transition: all var(--duration);

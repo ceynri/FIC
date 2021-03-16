@@ -6,7 +6,7 @@
         <div class="comment">Upload compressed images to decompress</div>
       </header>
     </div>
-    <Uploader accept=".fic" />
+    <Uploader type="fic" />
   </section>
 </template>
 

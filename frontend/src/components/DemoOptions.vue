@@ -45,35 +45,6 @@ export default {
     width: 300px;
     margin-right: 40px;
     overflow: hidden;
-
-    .image_wrapper {
-      width: 100%;
-      max-height: 600px;
-      overflow: hidden;
-
-      .image {
-        display: block;
-        width: 100%;
-        height: auto;
-      }
-    }
-
-    .image_info {
-      color: var(--text2);
-      margin: 16px 20px 20px;
-
-      .image_name {
-        @include no-wrap;
-        color: var(--text);
-        font-size: 16px;
-        margin-bottom: 10px;
-      }
-
-      .image_size {
-        font-size: 12px;
-        margin-top: 8px;
-      }
-    }
   }
 
   .setting_panel {

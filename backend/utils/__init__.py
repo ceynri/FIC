@@ -54,11 +54,7 @@ class File:
         return f'{self.name}_{suffix}{ext}'
 
 
-def save_fic(feat, tex, file_name):
-    data = {
-        'feat': feat,
-        'tex': tex,
-    }
+def save_binary_file(data, file_name):
     with open(file_name, 'wb') as f:
         pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
     return file_name
