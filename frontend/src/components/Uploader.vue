@@ -24,22 +24,19 @@
             <template v-if="item.result">
               -> {{ sizeFormat(item.result.size) }}
               <template v-if="type == 'image'"
-                >({{ percentFormat(item.result.compression_ratio) }})</template
+                >({{ percentFormat(item.result.size / item.size) }})</template
               >
             </template>
           </div>
         </div>
         <div class="btn_wrapper">
-          <a
-            v-if="item.result && item.result.data"
-            class="btn clickable"
-            :href="item.result.data"
-            :download="item.result.name"
-          >
-            <IconBase width="20px" height="20px" icon-name="download">
-              <DownloadIcon />
-            </IconBase>
-          </a>
+          <button v-if="item.result && item.result.data" class="btn clickable">
+            <a :href="item.result.data" :download="item.result.name">
+              <IconBase width="20px" height="20px" icon-name="download">
+                <DownloadIcon />
+              </IconBase>
+            </a>
+          </button>
           <button
             v-if="(type == 'image' && !item.result) || (type == 'fic' && item.result)"
             class="btn clickable"
