@@ -4,26 +4,45 @@
     <overlay-scrollbars class="image_list" v-viewer>
       <div class="image_item" v-for="(item, i) in value" :key="item.name">
         <div class="image_wrapper">
-          <img class="image" v-if="isImage(item.dataUrl)" :src="item.dataUrl" />
+          <img
+            v-if="(type == 'image' && !item.result) || (type == 'fic' && item.result)"
+            class="image clickable"
+            :src="item.dataUrl"
+          />
           <IconBase v-else width="60px" height="60px" icon-name="archive">
             <ArchiveIcon />
           </IconBase>
         </div>
         <div class="image_info">
           <div class="image_name">
-            {{ item.name }}
+            <template v-if="!item.result">{{ item.name }}</template>
+            <template v-else>{{ item.result.name }}</template>
           </div>
           <div class="image_size">
             {{ sizeFormat(item.size) }}
+            <template v-if="item.result">
+              -> {{ sizeFormat(item.result.size) }}
+              <template v-if="type == 'image'"
+                >({{ percentFormat(item.result.compression_ratio) }})</template
+              >
+            </template>
           </div>
         </div>
         <div class="btn_wrapper">
-          <button v-if="item.result" class="btn clickable" @click="downloadResult(item.result)">
+          <button
+            v-if="item.result && item.result.data"
+            class="btn clickable"
+            @click="downloadResult(item.result.data)"
+          >
             <IconBase width="20px" height="20px" icon-name="download">
               <DownloadIcon />
             </IconBase>
           </button>
-          <button v-if="isImage(item.dataUrl)" class="btn clickable" @click="viewImage(i)">
+          <button
+            v-if="(type == 'image' && !item.result) || (type == 'fic' && item.result)"
+            class="btn clickable"
+            @click="viewImage(i)"
+          >
             <IconBase width="20px" height="20px" icon-name="zoom in">
               <ZoomInIcon />
             </IconBase>
@@ -38,11 +57,11 @@
     </overlay-scrollbars>
     <form class="upload_area clickable" ref="uploadArea" @click="clickToUpload">
       <IconBase
+        v-if="dragOver"
         class="add"
         :width="isAdded ? 80 : 160"
         :height="isAdded ? 80 : 160"
         icon-name="add"
-        v-if="dragOver"
       >
         <AddIcon />
       </IconBase>
@@ -76,9 +95,9 @@ import { uploads } from '@/service';
 
 export default {
   props: {
-    accept: {
+    type: {
       type: String,
-      default: '*',
+      default: 'image',
     },
     multiple: {
       type: Boolean,
@@ -99,6 +118,12 @@ export default {
   computed: {
     isAdded() {
       return this.value.length > 0;
+    },
+    accept() {
+      if (this.type === 'image') {
+        return 'image/*';
+      }
+      return '.fic';
     },
   },
   mounted() {
@@ -226,6 +251,12 @@ export default {
      */
     isImage(dataUrl) {
       return dataUrl && dataUrl.startsWith('data:image');
+    },
+    /**
+     * 下载结果
+     */
+    downloadResult(data) {
+      window.open(data);
     },
     /**
      * 禁止原生事件避免触发打开图片的原生行为
@@ -359,10 +390,13 @@ export default {
         min-width: 200px;
         flex: auto;
         padding: 0.5em 0;
+        font-size: 16px;
 
         .image_name {
-          margin-bottom: 0.5em;
           @include no-wrap;
+        }
+        & > * {
+          line-height: 1.5;
         }
       }
 

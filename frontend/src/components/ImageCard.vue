@@ -63,6 +63,7 @@ export default {
       @include no-wrap;
       color: var(--text);
       font-size: 16px;
+      line-height: 1.5;
     }
 
     .image_ext_info {

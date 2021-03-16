@@ -13,8 +13,8 @@ from fcn.DeepRcon import DRcon
 from fcn.endtoend import AutoEncoder
 from utils.eval_index import psnr, ssim
 from utils import (
-    CustomDataParallel, File, load_image_array, save_fic, tensor_normalize,
-    tensor_to_array
+    CustomDataParallel, File, load_image_array, save_binary_file,
+    tensor_normalize, tensor_to_array
 )
 from utils.jpeg import jpeg_compress
 
@@ -89,15 +89,13 @@ def demo_process():
 
     with torch.no_grad():
         # 将二进制转为tensor
-        x_input = file.load_tensor()
-        x_input = x_input.cuda()
+        x_input = file.load_tensor().cuda()
 
         # 特征提取与重建
         feat, x_feat = extract_feat(x_input)
 
         # 残差纹理图
-        x_resi = x_input - x_feat
-        x_resi = x_resi.cuda()
+        x_resi = (x_input - x_feat).cuda()
 
         # 残差纹理图压缩
         x_resi_norm, intervals = tensor_normalize(x_resi)
@@ -113,7 +111,11 @@ def demo_process():
 
         # 保存压缩数据
         fic_path = get_path(f'{file.name}.fic')
-        save_fic(feat, tex, fic_path)
+        save_binary_file({
+            'feat': feat,
+            'tex': tex,
+            'intervals': intervals,
+        }, fic_path)
         fic_size = path.getsize(fic_path)
 
         # 待保存图片
@@ -179,52 +181,65 @@ def demo_process():
         return response
 
 
-# @app.route('/compress', methods=['POST'])
-# def compress():
-#     '''批量压缩图片并返回压缩结果'''
+@app.route('/compress', methods=['POST'])
+def compress():
+    '''批量压缩图片并返回压缩结果'''
 
-#     # 获取文件对象
-#     files = request.files.getlist('files')
-#     # TODO
-#     file = File(files[0])
+    # 获取文件对象
+    files = request.files.getlist('files')
+    ret = []
+    for rawfile in files:
+        file = File(rawfile)
+        try:
+            with torch.no_grad():
+                # 将二进制转为tensor
+                x_input = file.load_tensor().cuda()
 
-#     with torch.no_grad():
-#         # 将二进制转为tensor
-#         x_input = file.load_tensor()
-#         x_input = x_input.cuda()
+                # 特征提取与重建
+                feat, x_feat = extract_feat(x_input)
 
-#         # 特征提取与重建
-#         feat, x_feat = extract_feat(x_input)
+                # 残差纹理图
+                x_resi = (x_input - x_feat).cuda()
 
-#         # 残差纹理图
-#         x_resi = x_input - x_feat
-#         x_resi = x_resi.cuda()
+                # 残差纹理图压缩
+                x_resi_norm, intervals = tensor_normalize(x_resi)
+                x_resi_norm = x_resi_norm.cuda()
+                tex = e_layer.compress(x_resi_norm), intervals
 
-#         # 残差纹理图压缩
-#         x_resi_norm, intervals = tensor_normalize(x_resi)
-#         x_resi_norm = x_resi_norm.cuda()
-#         tex = e_layer.compress(x_resi_norm), intervals
+            # 保存压缩数据
+            fic_name = f'{file.name}.fic'
+            fic_path = get_path(fic_name)
+            save_binary_file({
+                'feat': feat,
+                'tex': tex,
+                'intervals': intervals,
+            }, fic_path)
+            fic_size = path.getsize(fic_path)
 
-#         # 保存压缩数据
-#         save_path = get_path(f'{file.name}.fic')
-#         save_fic(feat, tex, save_path)
+            # 获取原图大小
+            input_path = get_path(file.name_suffix('input', ext='.bmp'))
+            save_image(x_input, input_path)
+            input_size = path.getsize(input_path)
+            fic_compression_ratio = fic_size / input_size
 
-#         # 保存图片和url路径
-#         result = {
-#             'input': x_input,
-#         }
-#         ret = {
-#             'name': file.name,
-#             'data': get_url(f'{file.name}.fic'),
-#         }
-#         for key, value in result.items():
-#             filename = file.name_suffix(key)
-#             save_image(value, get_path(filename))
-#             ret[key] = get_url(filename)
+            # 待返回的结果数据
+            result = {
+                'name': fic_name,
+                'data': get_url(fic_name),
+                'size': fic_size,
+                'compression_ratio': fic_compression_ratio,
+            }
+            ret.append(result)
+        except Exception:
+            ret.append({
+                'name': file.name,
+                'data': '',
+            })
 
-#         # 响应请求
-#         response = jsonify(ret)
-#         return response
+    # 响应请求
+    response = jsonify(ret)
+    return response
+
 
 if __name__ == '__main__':
     # 监听服务端口
