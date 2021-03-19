@@ -11,6 +11,8 @@ from torchvision.utils import save_image
 
 sys.path.append(path.dirname(path.dirname(path.realpath(__file__))))
 from gan.network import GAN
+from utils import tensor_to_array
+from utils.eval_index import psnr, ssim
 
 base_path = './test'
 
@@ -53,10 +55,10 @@ class CustomDataParallel(nn.DataParallel):
 
 if __name__ == '__main__':
     net = GAN(train=True).cuda()
-    param = torch.load('./data/b_layer_gan_3.pth', map_location='cuda:0')
+    param = torch.load(sys.argv[1], map_location='cuda:0')
     net.load_state_dict(param)
 
-    file_path = sys.argv[1]
+    file_path = sys.argv[2]
     file = File(file_path)
     file.load_tensor()
 
@@ -69,5 +71,11 @@ if __name__ == '__main__':
         # # reconstruct feature image
         # output = decoder(feat)
         output = net(input)
-        save_image(input, path.join(base_path, file.name_suffix('_input')))
-        save_image(output, path.join(base_path, file.name_suffix('_output')))
+        input_path = path.join(base_path, file.name_suffix('_input'))
+        output_path = path.join(base_path, file.name_suffix('_output'))
+        save_image(input, input_path)
+        save_image(output, output_path)
+        input_arr = tensor_to_array(input)
+        output_arr = tensor_to_array(output)
+        print('psnr', psnr(input_arr, output_arr))
+        print('ssim', ssim(input_arr, output_arr))
