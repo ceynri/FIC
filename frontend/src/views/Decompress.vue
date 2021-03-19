@@ -23,6 +23,7 @@
 <script>
 import Uploader from '@/components/Uploader.vue';
 
+import packToDownload from '@/utils/packToDownload';
 import { decompress } from '@/service';
 
 export default {
@@ -48,7 +49,7 @@ export default {
       }
     },
     downloadAll() {
-      // TODO
+      packToDownload(this.result);
     },
   },
   components: {
