@@ -4,6 +4,7 @@ from generator import Generator
 from discriminator import Discriminator
 from Ganloss import GANloss
 from pytorch_msssim import ssim
+from perceptual_loss import Perc
 
 class GAN(nn.Module):
     def __init__(self, train, lmbda1=100, lmbda2 = 100):
@@ -29,7 +30,8 @@ class GAN(nn.Module):
         self.loss_G_GAN = self.criterionG(pred_fake, True)
         self.loss_G_L1 = self.criterionL1(self.x_gen, self.real)
         self.ssim_loss = 1 - ssim(self.real, self.x_gen)
-        self.loss_G = self.loss_G_GAN + self.lmbda1 * self.loss_G_L1 + self.lmbda2 * self.ssim_loss
+        self.perc_loss = self.criterionPerc(self.real, self.x_gen)
+        self.loss_G = self.loss_G_GAN + self.lmbda1 * self.loss_G_L1 + self.lmbda2 * self.ssim_loss + self.perc_loss
         self.loss_G.backward()
 
     def backward_D(self):

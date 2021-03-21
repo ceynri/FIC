@@ -55,7 +55,7 @@ if __name__ == '__main__':
             'D_optimizer_state_dict': net.optimizer_D.state_dict(),
             'G_loss': net.loss_G,
             'D_loss': net.loss_D
-        }, '/data/chenyangrui/save/BaseLayer_checkpoints')
-        torch.save(net.state_dict(), "/data/chenyangrui/save/BaseLayer.pth")
+        }, '/data/chenyangrui/save/BaseLayer_perc_checkpoints')
+        torch.save(net.state_dict(), f"/data/chenyangrui/save/BaseLayer_perc_{epoch}.pth")
 
 
