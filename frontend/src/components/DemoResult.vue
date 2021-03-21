@@ -10,37 +10,42 @@
           <img class="image" :src="image.input" alt="input image" />
           <div class="image_info">
             <div class="image_name">original image</div>
-            <div class="image_size">{{ sizeFormat(data.size.input) }}</div>
+            <div class="image_size">{{ data.size.input }} bytes</div>
           </div>
         </div>
         <div class="contrast_image card" :class="{ hidden }">
           <img class="image" :src="contrastImage.src" :alt="contrastImage.name" />
           <div class="image_info">
             <div class="image_name">{{ contrastImage.name }} image</div>
-            <div class="image_size">{{ sizeFormat(contrastImage.size) }}</div>
+            <div class="image_size">{{ contrastImage.size }} bytes</div>
           </div>
         </div>
       </div>
       <div class="contrast_info card shadow">
         <div class="info_line clickable" @click="select('output')">
-          <div class="selector" :class="{ selected: selectedImageName == 'output' }"></div>
-          <div class="image_name">Our method</div>
+          <div class="image_name">
+            <span class="selector" :class="{ selected: selectedImageName == 'output' }"
+              >Our method</span
+            >
+          </div>
           <div class="image_info">
-            <div>{{ sizeFormat(data.size.fic) }} (compress data)</div>
-            <div>compression ratio: {{ percentFormat(data.eval.fic_compression_ratio) }}</div>
-            <div>PSNR: {{ data.eval.fic_psnr.toFixed(6) }}</div>
-            <div>SSIM: {{ data.eval.fic_ssim.toFixed(6) }}</div>
+            <div>{{ data.eval.tex_bpp.toFixed(3) }} bpp</div>
+            <div>{{ data.size.tex }} bytes (texture size)</div>
+            <div>{{ data.size.feat }} bytes (feature size)</div>
+            <div>PSNR {{ data.eval.fic_psnr.toFixed(6) }}</div>
+            <div>SSIM {{ data.eval.fic_ssim.toFixed(6) }}</div>
           </div>
         </div>
         <div class="divider"></div>
         <div class="info_line clickable" @click="select('jpeg')">
-          <div class="selector" :class="{ selected: selectedImageName == 'jpeg' }"></div>
-          <div class="image_name">JPEG</div>
+          <div class="image_name">
+            <span class="selector" :class="{ selected: selectedImageName == 'jpeg' }">JPEG</span>
+          </div>
           <div class="image_info">
-            <div>{{ sizeFormat(data.size.jpeg) }}</div>
-            <div>compression ratio: {{ percentFormat(data.eval.jpeg_compression_ratio) }}</div>
-            <div>PSNR: {{ data.eval.jpeg_psnr.toFixed(6) }}</div>
-            <div>SSIM: {{ data.eval.jpeg_ssim.toFixed(6) }}</div>
+            <div>{{ data.eval.jpeg_bpp.toFixed(3) }} bpp</div>
+            <div>{{ data.size.jpeg }} bytes</div>
+            <div>PSNR {{ data.eval.jpeg_psnr.toFixed(6) }}</div>
+            <div>SSIM {{ data.eval.jpeg_ssim.toFixed(6) }}</div>
           </div>
         </div>
       </div>
@@ -51,18 +56,8 @@
       <ImageCard class="card clickable" :src="image.feat" name="feature"></ImageCard>
       <ImageCard class="card clickable" :src="image.output" name="output"></ImageCard>
       <ImageCard class="card clickable" :src="image.jpeg" name="jpeg"></ImageCard>
-      <ImageCard class="card clickable" :src="image.resi" name="residual"></ImageCard>
-      <ImageCard class="card clickable" :src="image.recon" name="reconstruction"></ImageCard>
-      <ImageCard
-        class="card clickable"
-        :src="image.resi_norm"
-        name="normalize residual"
-      ></ImageCard>
-      <ImageCard
-        class="card clickable"
-        :src="image.recon_norm"
-        name="normalize reconstruction"
-      ></ImageCard>
+      <ImageCard class="card clickable" :src="image.tex" name="texture"></ImageCard>
+      <ImageCard class="card clickable" :src="image.tex_decoded" name="decoded texture"></ImageCard>
       <ImageCard
         class="card clickable"
         name="compress data"
@@ -185,20 +180,16 @@ export default {
       }
 
       .selector {
-        width: 40px;
-        height: 26px;
         flex: none;
         position: relative;
+        display: flex;
+        align-items: center;
 
         &:before {
           content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-
           height: 8px;
           width: 8px;
+          margin-right: 14px;
           border: 1px solid var(--border);
           box-sizing: border-box;
           border-radius: 50%;
@@ -206,8 +197,8 @@ export default {
         }
 
         &.selected:before {
-          height: 14px;
-          width: 14px;
+          height: 12px;
+          width: 12px;
           border: none;
           background: var(--primary);
         }
@@ -218,7 +209,7 @@ export default {
         font-size: 22px;
         line-height: 1.2;
         position: relative;
-        flex: 1.2;
+        flex: 1.4;
       }
 
       .image_info {
