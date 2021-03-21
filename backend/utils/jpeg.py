@@ -3,7 +3,7 @@ from PIL import Image
 from os import path
 
 
-def jpeg_compress(input_path, output_path='', size=5120, step=2, quality=80):
+def jpeg_compress(input_path, output_path='', size=5120, step=1, quality=80):
     """将图片压缩到指定大小"""
     file_size = path.getsize(input_path)
     if file_size <= size:
