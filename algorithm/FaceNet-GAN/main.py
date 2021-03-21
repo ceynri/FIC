@@ -17,24 +17,24 @@ def collate(batch):
 
 if __name__ == '__main__':
     cv2.ocl.setUseOpenCL(False)
-    dataset = dataset('/data/chenyangrui/train')
+    dataset = dataset('../FaceNet/data/train')
     ds = DataLoader(
         dataset=dataset,
-        num_workers=10,
-        batch_size=80,
+        num_workers=0,
+        batch_size=16,
         shuffle=True,
         drop_last=True,
         pin_memory=True,
         collate_fn=collate
     )
-    net = GAN(train=True).cuda(2)
+    net = GAN(train=True).cuda()
     epoch = 0
 
     print("start train")
     while(epoch < 30):
         net.train()
         for i, d in enumerate(ds):
-            d = d.cuda(2)
+            d = d.cuda()
             x_out = net(d)
             net.optimize_parameters()
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
             'D_optimizer_state_dict': net.optimizer_D.state_dict(),
             'G_loss': net.loss_G,
             'D_loss': net.loss_D
-        }, '/data/chenyangrui/save/BaseLayer_perc_checkpoints')
-        torch.save(net.state_dict(), f"/data/chenyangrui/save/BaseLayer_perc_{epoch}.pth")
+        }, '/data/chenyangrui/save/BaseLayer_checkpoints')
+        torch.save(net.state_dict(), f"/data/chenyangrui/save/FaceGan_{epoch}.pth")
 
 
