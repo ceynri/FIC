@@ -4,7 +4,7 @@ from compressai.models import CompressionModel
 
 class AutoEncoder(CompressionModel):
     def __init__(self, N=128):
-        super().__init__(entropy_bottleneck_channels=N)
+        super(AutoEncoder, self).__init__(entropy_bottleneck_channels=N)
 
         self.encoder = Analysis(out_channel_N = N)
         self.decoder = Synthesis(out_channel_N = N)
