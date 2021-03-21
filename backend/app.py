@@ -1,6 +1,5 @@
 from os import path
 
-import numpy as np
 import torch
 from facenet_pytorch import InceptionResnetV1
 from flask import Flask, jsonify, request
@@ -95,19 +94,19 @@ def demo_process():
         feat, x_feat = extract_feat(x_input)
 
         # 残差纹理图
-        x_resi = (x_input - x_feat).cuda()
+        x_tex = (x_input - x_feat).cuda()
 
         # 残差纹理图压缩
-        x_resi_norm, intervals = tensor_normalize(x_resi)
-        x_resi_norm = x_resi_norm.cuda()
-        tex = e_layer.compress(x_resi_norm)
+        x_tex_norm, intervals = tensor_normalize(x_tex)
+        x_tex_norm = x_tex_norm.cuda()
+        tex = e_layer.compress(x_tex_norm)
 
         # 纹理压缩数据解压
-        x_recon_norm = e_layer.decompress(tex)
-        x_recon = tensor_normalize(x_recon_norm, intervals, 'anti')
+        x_tex_decoded_norm = e_layer.decompress(tex)
+        x_tex_decoded = tensor_normalize(x_tex_decoded_norm, intervals, 'anti')
 
         # 获取完整结果图
-        x_output = x_feat + x_recon
+        x_output = x_feat + x_tex_decoded
 
         # 保存压缩数据
         fic_path = get_path(f'{file.name}.fic')
@@ -118,15 +117,27 @@ def demo_process():
             'ext': file.ext,
         }, fic_path)
         fic_size = path.getsize(fic_path)
+        # TODO 取消魔法值
+        fic_bpp = fic_size / (256 * 256)
+
+        feat_path = get_path(f'{file.name}_feat.fic')
+        save_binary_file({
+            'feat': feat,
+        }, feat_path)
+        feat_size = path.getsize(feat_path)
+        tex_size = fic_size - feat_size
+        # TODO 取消魔法值
+        feat_bpp = feat_size / (256 * 256)
+        tex_bpp = tex_size / (256 * 256)
 
         # 待保存图片
         result = {
             'input': x_input,
             'feat': x_feat,
-            'resi': x_resi,
-            'recon': x_recon,
-            'resi_norm': x_resi_norm,
-            'recon_norm': x_recon_norm,
+            'tex': x_tex,
+            'tex_decoded': x_tex_decoded,
+            'tex_norm': x_tex_norm,
+            'tex_decoded_norm': x_tex_decoded_norm,
             'output': x_output,
         }
 
@@ -139,7 +150,16 @@ def demo_process():
             'eval': {
                 'fic_psnr': psnr(x_input_arr, x_output_arr),
                 'fic_ssim': ssim(x_input_arr, x_output_arr),
+                'fic_bpp': fic_bpp,
+                'feat_bpp': feat_bpp,
+                'tex_bpp': tex_bpp,
             },
+            'size': {
+                'fic': fic_size,
+                'output': fic_size,
+                'feat': feat_size,
+                'tex': tex_size,
+            }
         }
         for key, value in result.items():
             # 保存图片
@@ -154,17 +174,13 @@ def demo_process():
         input_size = path.getsize(input_path)
         fic_compression_ratio = fic_size / input_size
 
-        ret['size'] = {
-            'fic': fic_size,
-            'output': fic_size,
-            'input': input_size,
-        }
+        ret['size']['input'] = input_size
         ret['eval']['fic_compression_ratio'] = fic_compression_ratio
 
         # jpeg对照组处理
         jpeg_name = file.name_suffix('jpeg', ext='.jpg')
         jpeg_path = get_path(jpeg_name)
-        jpeg_compress(input_path, jpeg_path, size=fic_size)
+        jpeg_compress(input_path, jpeg_path, size=tex_size, quality=50)
 
         ret['image']['jpeg'] = get_url(jpeg_name)
         jpeg_arr = load_image_array(jpeg_path)
@@ -175,6 +191,7 @@ def demo_process():
         ret['size']['jpeg'] = jpeg_size
         jpeg_compression_ratio = jpeg_size / input_size
         ret['eval']['jpeg_compression_ratio'] = jpeg_compression_ratio
+        ret['eval']['jpeg_bpp'] = jpeg_size / (256 * 256)
 
         # 响应请求
         response = jsonify(ret)
@@ -198,12 +215,12 @@ def compress():
             feat, x_feat = extract_feat(x_input)
 
             # 残差纹理图
-            x_resi = (x_input - x_feat).cuda()
+            x_tex = (x_input - x_feat).cuda()
 
             # 残差纹理图压缩
-            x_resi_norm, intervals = tensor_normalize(x_resi)
-            x_resi_norm = x_resi_norm.cuda()
-            tex = e_layer.compress(x_resi_norm)
+            x_tex_norm, intervals = tensor_normalize(x_tex)
+            x_tex_norm = x_tex_norm.cuda()
+            tex = e_layer.compress(x_tex_norm)
 
         # 保存压缩数据
         fic_name = f'{file.name}.fic'
@@ -253,11 +270,13 @@ def decompress():
             x_feat = b_layer(fic['feat'])
 
             # 纹理压缩数据解压
-            x_recon_norm = e_layer.decompress(fic['tex'])
-            x_recon = tensor_normalize(x_recon_norm, fic['intervals'], 'anti')
+            x_tex_decoded_norm = e_layer.decompress(fic['tex'])
+            x_tex_decoded = tensor_normalize(
+                x_tex_decoded_norm, fic['intervals'], 'anti'
+            )
 
         # 获取完整结果图
-        x_output = x_feat + x_recon
+        x_output = x_feat + x_tex_decoded
 
         # file_name = file.name_suffix('fic', ext='.bmp')
         file_name = file.name_suffix('fic', ext=fic['ext'])

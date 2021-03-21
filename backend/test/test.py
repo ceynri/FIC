@@ -10,11 +10,17 @@ from autocrop import Cropper
 from torchvision import transforms
 from torchvision.utils import save_image
 
-from endtoend import AutoEncoder
-from DeepRcon import DRcon
+sys.path.append(path.dirname(path.dirname(path.realpath(__file__))))
+
+from fcn.endtoend import AutoEncoder
+from fcn.DeepRcon import DRcon
 from utils import save_binary_file, tensor_normalize
 
-base_path = './public/result'
+base_path = './test/result'
+
+
+def get_path(filename):
+    return path.join(base_path, filename)
 
 
 class File:
@@ -58,25 +64,25 @@ if __name__ == '__main__':
     resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda()
 
     # reconstruct face by feature
-    base = DRcon().eval()
-    base = base.cuda()
-    base = nn.DataParallel(base).cuda()
-    param = torch.load('./data/base_layer.pth')
-    base.load_state_dict(param)
+    b_layer = DRcon().eval()
+    b_layer = b_layer.cuda()
+    b_layer = nn.DataParallel(b_layer).cuda()
+    b_param = torch.load('./data/b_layer_fcn.pth', map_location='cuda:0')
+    b_layer.load_state_dict(b_param)
 
-    codec = AutoEncoder().eval().cuda()
-    codec = CustomDataParallel(codec).cuda()
-    c_param = torch.load('./data/enhanceLayer_lamda.pth')
-    codec.load_state_dict(c_param)
+    e_layer = AutoEncoder().eval().cuda()
+    e_layer = CustomDataParallel(e_layer).cuda()
+    c_param = torch.load('./data/e_layer_5120.pth', map_location='cuda:0')
+    e_layer.load_state_dict(c_param)
 
     file_path = sys.argv[1]
     file = File(file_path)
     file.load_tensor()
 
     with torch.no_grad():
-        label = file.tensor
-        label = label.cuda()
-        feat = resnet(label)
+        x_input = file.tensor
+        x_input = x_input.cuda()
+        feat = resnet(x_input)
 
         # process feat shape to [N, 512, 1, 1]
         feat = torch.squeeze(feat, 1)
@@ -85,39 +91,24 @@ if __name__ == '__main__':
         feat = feat.cuda()
 
         # reconstruct feature image
-        x_feat = base(feat)
+        x_feat = b_layer(feat)
 
         # EnhancementLayer
-        x_resi = label - x_feat
+        x_resi = x_input - x_feat
         x_resi = x_resi.cuda()
-        # x_recon = codec(x_resi)
-        tex = codec.compress(x_resi)
-        x_recon = codec.decompress(tex)
-        x_output = x_feat + x_recon
+
+        # 残差纹理图压缩
+        x_resi_norm, intervals = tensor_normalize(x_resi)
+        x_resi_norm = x_resi_norm.cuda()
+        tex = e_layer.compress(x_resi_norm)
 
         x_resi_norm = tensor_normalize(x_resi)
-        x_recon_norm = tensor_normalize(x_recon)
 
-        save_path_name = path.join(base_path, f'{file.name}.fic')
-        save_binary_file(feat, tex, save_path_name)
-
-        result = [[label, file.name_suffix('_input')],
-                  [x_feat, file.name_suffix('_feat')],
-                  [x_resi, file.name_suffix('_resi')],
-                  [x_recon, file.name_suffix('_recon')],
-                  [x_resi_norm, file.name_suffix('_resi_norm')],
-                  [x_recon_norm, file.name_suffix('_recon_norm')],
-                  [x_output, file.name_suffix('_output')]]
-        for item in result:
-            save_image(item[0], path.join(base_path, item[1]))
-
-        data_file = File(path.join(base_path, f'{file.name}.fic'))
-        data_file.load_fic()
-        feat = data_file.fic['feat'].cuda()
-        tex = data_file.fic['tex']
-        x_feat = base(feat)
-        x_recon = codec.decompress(tex)
-        save_image(
-            x_feat + x_recon,
-            path.join(base_path, file.name_suffix('_decompressed'))
-        )
+        # 保存压缩数据
+        fic_path = get_path(f'{file.name}.fic')
+        save_binary_file({
+            'feat': feat,
+            'tex': tex,
+            'intervals': intervals,
+            'ext': file.ext,
+        }, fic_path)
