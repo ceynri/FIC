@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
+from gan.generator import Generator
+from gan.discriminator import Discriminator
+from gan.Ganloss import GANloss
 from pytorch_msssim import ssim
-
-from .discriminator import Discriminator
-from .Ganloss import GANloss
-from .generator import Generator
+from gan.perceptual_loss import Perc
 
 
 class GAN(nn.Module):
@@ -22,6 +22,7 @@ class GAN(nn.Module):
             self.optimizer_D = torch.optim.Adam(
                 self.netD.parameters(), lr=0.0002, betas=(0.5, 0.999)
             )
+            self.criterionPerc = Perc().cuda()
             self.lmbda1 = lmbda1
             self.lmbda2 = lmbda2
 
@@ -35,7 +36,8 @@ class GAN(nn.Module):
         self.loss_G_GAN = self.criterionG(pred_fake, True)
         self.loss_G_L1 = self.criterionL1(self.x_gen, self.real)
         self.ssim_loss = 1 - ssim(self.real, self.x_gen)
-        self.loss_G = self.loss_G_GAN + self.lmbda1 * self.loss_G_L1 + self.lmbda2 * self.ssim_loss
+        self.perc_loss = self.criterionPerc(self.real, self.x_gen)
+        self.loss_G = self.loss_G_GAN + self.lmbda1 * self.loss_G_L1 + self.lmbda2 * self.ssim_loss + self.perc_loss
         self.loss_G.backward()
 
     def backward_D(self):
