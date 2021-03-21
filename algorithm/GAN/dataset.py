@@ -61,7 +61,7 @@ class dataset(Dataset):
         img = self.transform(img)
         return img
 
-'''
+
 class dataset(Dataset):
     def __init__(self):
         self.path = Path('../data/train')
