@@ -2,19 +2,56 @@
   <section class="compressor page_frame">
     <div class="header_wrapper">
       <header class="title_wrapper">
-        <h1 class="title">Compress</h1>
+        <h1 class="title">Compressor</h1>
         <div class="comment">Upload facial images to compress</div>
       </header>
-      <!-- <button class="action_btn">Download All</button> -->
+      <button v-if="result" class="action_btn shadow_s_deep clickable" @click="downloadAll">
+        DOWNLOAD ALL
+      </button>
+      <button
+        v-else-if="fileList.length"
+        class="action_btn shadow_s_deep clickable"
+        @click="upload"
+      >
+        UPLOAD
+      </button>
     </div>
-    <Uploader accept="image/*" />
+    <Uploader type="image" v-model="fileList" />
   </section>
 </template>
 
 <script>
 import Uploader from '@/components/Uploader.vue';
 
+import packToDownload from '@/utils/packToDownload';
+import { compress } from '@/service';
+
 export default {
+  data() {
+    return {
+      fileList: [],
+      result: null,
+    };
+  },
+  methods: {
+    async upload() {
+      try {
+        const files = this.fileList.map((item) => item.rawFile);
+        this.result = await compress(files);
+        console.debug('compress result', this.result);
+        for (let i = 0; i < this.fileList.length; i += 1) {
+          this.fileList[i].result = this.result[i];
+        }
+        // Vue不会监听数组对象的更改，故需要调用方法手动触发Vue的监听
+        this.fileList.splice(0, 0);
+      } catch (e) {
+        console.error('compress error', e);
+      }
+    },
+    downloadAll() {
+      packToDownload(this.result);
+    },
+  },
   components: {
     Uploader,
   },

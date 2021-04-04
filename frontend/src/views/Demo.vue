@@ -3,11 +3,17 @@
     <div class="header_wrapper">
       <header class="title_wrapper">
         <h1 class="title">Demo</h1>
-        <div class="comment">Try to upload a facial image</div>
+        <div class="comment" v-if="state === 1">Try to upload a facial image</div>
+        <div class="comment" v-else-if="state === 2">
+          Select the appropriate compression options
+        </div>
+        <div class="comment" v-else>
+          Hover the cursor over the image below to compare with the original image
+        </div>
       </header>
     </div>
-    <Uploader v-if="!image" accept="image/*" :multiple="false" @uploaded="getImage" />
-    <DemoOptions v-else-if="!result" :image="image" @next="process" />
+    <Uploader v-if="state === 1" v-model="fileList" type="image" :multiple="false" />
+    <DemoOptions v-else-if="state === 2" :image="image" @next="process" />
     <DemoResult v-else :data="result" />
   </section>
 </template>
@@ -24,13 +30,26 @@ export default {
     return {
       image: null,
       result: null,
+      fileList: [],
     };
   },
-  methods: {
+  computed: {
+    state() {
+      if (!this.image) {
+        return 1;
+      }
+      if (!this.result) {
+        return 2;
+      }
+      return 3;
+    },
+  },
+  watch: {
     /**
      * 从 Uploader 获取上传的图片数据
      */
-    getImage(file) {
+    fileList() {
+      const file = this.fileList[0];
       this.image = {
         ...file,
         width: 0,
@@ -52,25 +71,12 @@ export default {
         };
       }
     },
+  },
+  methods: {
     async process() {
       try {
-        // const res = await demoProcess(this.image.rawFile);
-        // console.log(res);
-        // mock
-        this.result = {
-          raw: 'https://i.loli.net/2021/02/24/6cwenlBikqALFvg.png',
-          rawResolution: '123x234',
-          rawSize: '123KB',
-          input: 'https://i.loli.net/2021/02/24/YC7V5BAeU1poyDv.png',
-          inputSize: '40KB',
-          feat: 'https://i.loli.net/2021/02/24/HatRnmOZX2Aqpl5.png',
-          featSize: '128B',
-          resi: 'https://i.loli.net/2021/02/24/KYLRkxztadmPwXW.png',
-          resiSize: '10KB',
-          compressedData: '[Blob Object]',
-          compressedSize: '11KB',
-          output: 'https://i.loli.net/2021/02/24/MsGY1ExF9Ktkmal.png',
-        };
+        this.result = await demoProcess(this.image.rawFile);
+        console.debug('demoProcess', this.result);
       } catch (e) {
         console.error('demo process error', e);
       }

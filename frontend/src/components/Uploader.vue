@@ -1,29 +1,47 @@
 <template>
   <div class="uploader">
     <div class="container_border"></div>
-    <overlay-scrollbars class="image_list" v-viewer="viewerOptions" ref="imageList">
-      <div class="image_item" v-for="(item, i) in fileList" :key="item.name">
+    <overlay-scrollbars class="image_list" v-viewer>
+      <div class="image_item" v-for="(item, i) in value" :key="item.name">
         <div class="image_wrapper">
-          <img class="image" v-if="isImage(item.dataUrl)" :src="item.dataUrl" />
+          <img v-if="type == 'image' && !item.result" class="image clickable" :src="item.dataUrl" />
+          <img
+            v-else-if="type == 'fic' && item.result"
+            class="image clickable"
+            :src="item.result.data"
+          />
           <IconBase v-else width="60px" height="60px" icon-name="archive">
             <ArchiveIcon />
           </IconBase>
         </div>
         <div class="image_info">
           <div class="image_name">
-            {{ item.name }}
+            <template v-if="!item.result">{{ item.name }}</template>
+            <template v-else>{{ item.result.name }}</template>
           </div>
           <div class="image_size">
             {{ sizeFormat(item.size) }}
+            <template v-if="item.result">
+              -> {{ sizeFormat(item.result.size) }}
+              <template v-if="type == 'image'"
+                >({{ percentFormat(item.result.size / item.size) }})</template
+              >
+            </template>
           </div>
         </div>
         <div class="btn_wrapper">
-          <button v-if="item.result" class="btn clickable" @click="downloadResult(item.result)">
-            <IconBase width="20px" height="20px" icon-name="download">
-              <DownloadIcon />
-            </IconBase>
+          <button v-if="item.result && item.result.data" class="btn clickable">
+            <a :href="item.result.data" :download="item.result.name">
+              <IconBase width="20px" height="20px" icon-name="download">
+                <DownloadIcon />
+              </IconBase>
+            </a>
           </button>
-          <button v-if="isImage(item.dataUrl)" class="btn clickable" @click="viewImage(i)">
+          <button
+            v-if="(type == 'image' && !item.result) || (type == 'fic' && item.result)"
+            class="btn clickable"
+            @click="viewImage(i)"
+          >
             <IconBase width="20px" height="20px" icon-name="zoom in">
               <ZoomInIcon />
             </IconBase>
@@ -38,17 +56,18 @@
     </overlay-scrollbars>
     <form class="upload_area clickable" ref="uploadArea" @click="clickToUpload">
       <IconBase
+        v-if="dragOver"
         class="add"
         :width="isAdded ? 80 : 160"
         :height="isAdded ? 80 : 160"
         icon-name="add"
-        v-if="dragOver"
       >
         <AddIcon />
       </IconBase>
       <div class="tips" v-else-if="!isAdded">
-        <div class="tips_line">Click here to select image to upload</div>
-        <div class="tips_line">or drag & drop image here 😊</div>
+        <div class="tips_line">Click here to upload image</div>
+        <!-- TODO 判断是否为移动端 -->
+        <div class="tips_line" v-if="true">or drop image here 😊</div>
       </div>
       <div class="tips" v-else>Add more...</div>
       <input
@@ -71,36 +90,38 @@ import CancelIcon from '@/components/icons/CancelIcon.vue';
 import AddIcon from '@/components/icons/AddIcon.vue';
 
 import readFile from '@/utils/readFile';
-import { uploads } from '@/service';
 
 export default {
   props: {
-    accept: {
+    type: {
       type: String,
-      default: '*',
+      default: 'image',
     },
     multiple: {
       type: Boolean,
       default: true,
     },
+    value: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
-      fileList: [],
       fileNameSet: new Set(),
       dragOver: false,
       viewer: null,
-      viewerOptions: {
-        transition: false,
-        toolbar: false,
-        title: false,
-        navbar: false,
-      },
     };
   },
   computed: {
     isAdded() {
-      return this.fileList.length > 0;
+      return this.value.length > 0;
+    },
+    accept() {
+      if (this.type === 'image') {
+        return 'image/*';
+      }
+      return '.fic';
     },
   },
   mounted() {
@@ -146,7 +167,7 @@ export default {
       this.preventFn(e);
       const files = e.dataTransfer?.files;
       if (!this.multiple && files.length > 1) {
-        alert('Please upload only one image');
+        console.error('Please upload only one image');
         return;
       }
       this.addFiles(files);
@@ -167,7 +188,7 @@ export default {
         if (this.fileNameSet.has(file.name)) {
           // TODO 可改为 Bubbling prompt
           console.warn(`Duplicate file：${file.name}`);
-          // alert(`Duplicate file：${file.name}`);
+          // console.error(`Duplicate file：${file.name}`);
           return;
         }
         this.fileNameSet.add(file.name);
@@ -186,37 +207,21 @@ export default {
             size: file.size,
             rawFile: file,
           };
-          this.fileList.push(fileItem);
+          this.value.push(fileItem);
 
-          // TODO: 将改为点击按钮后再执行上传文件并压缩的请求
-          // this.uploadFile(file);
-
-          console.debug('fileList:', this.fileList);
-          // TODO: 下一行为Demo模块所做的单独逻辑，可考虑是否有优化空间
-          this.$emit('uploaded', fileItem);
+          console.debug('fileList:', this.value);
         } catch (e) {
           console.error(e);
-          alert(`${file.name}上传失败，请重新上传`);
+          console.error(`${file.name}上传失败，请重新上传`);
         }
       });
-    },
-    /**
-     * 上传文件
-     */
-    async uploadFile(file) {
-      try {
-        const res = await uploads(file);
-        console.log(res);
-      } catch (e) {
-        console.error(e);
-      }
     },
     /**
      * 删除特定的文件
      */
     deleteFile(i) {
-      this.fileNameSet.delete(this.fileList[i].name);
-      this.fileList.splice(i, 1);
+      this.fileNameSet.delete(this.value[i].name);
+      this.value.splice(i, 1);
     },
     /**
      * 查看大图
@@ -227,12 +232,6 @@ export default {
         return;
       }
       this.viewer.view(i);
-    },
-    /**
-     * 判断 dataUrl 字符串是否为图像
-     */
-    isImage(dataUrl) {
-      return dataUrl && dataUrl.startsWith('data:image');
     },
     /**
      * 禁止原生事件避免触发打开图片的原生行为
@@ -271,12 +270,13 @@ export default {
 
     border: var(--standard-border);
     border-radius: var(--border-radius);
-    transition: border var(--duration);
+    transition: all var(--duration);
   }
 
   &:hover {
     .container_border {
       border-color: var(--border2);
+      background-color: rgba(0, 0, 0, 0.01);
     }
 
     .upload_area .tips {
@@ -365,10 +365,13 @@ export default {
         min-width: 200px;
         flex: auto;
         padding: 0.5em 0;
+        font-size: 16px;
 
         .image_name {
-          margin-bottom: 0.5em;
           @include no-wrap;
+        }
+        & > * {
+          line-height: 1.5;
         }
       }
 
