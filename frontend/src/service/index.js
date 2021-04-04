@@ -1,24 +1,38 @@
 import axios from 'axios';
 
-const baseUrl = 'http://fic.ceynri.cn/api';
-
-// eslint-disable-next-line import/prefer-default-export
-export function uploads(file) {
+export async function demoProcess(file) {
   const data = new FormData();
   data.append('file', file);
-  return axios.post(`${baseUrl}/uploads`, data, {
+  const res = await axios.post('/api/demo_process', data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
+  return res.data;
 }
 
-export function demoProcess(file) {
+export async function compress(files) {
   const data = new FormData();
-  data.append('file', file);
-  return axios.post(`${baseUrl}/demo_process`, data, {
+  files.forEach((file) => {
+    data.append('files', file);
+  });
+  const res = await axios.post('/api/compress', data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
+  return res.data;
+}
+
+export async function decompress(files) {
+  const data = new FormData();
+  files.forEach((file) => {
+    data.append('files', file);
+  });
+  const res = await axios.post('/api/decompress', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return res.data;
 }

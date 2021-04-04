@@ -1,16 +1,9 @@
 <template>
   <div class="container">
-    <div class="preview_panel card">
-      <div class="image_wrapper">
-        <img class="image" :src="image.dataUrl" :alt="image.name" ref="image" />
-      </div>
-      <div class="image_info">
-        <div class="image_name">{{ image.name }}</div>
-        <div v-if="image.width" class="image_size">{{ image.width }} × {{ image.height }}</div>
-        <div class="image_size">{{ sizeFormat(image.size) }}</div>
-      </div>
-    </div>
-    <div class="setting_panel card">
+    <ImageCard class="preview_panel" :src="image.dataUrl" :name="image.name">
+      <div>{{ sizeFormat(image.size) }}</div>
+    </ImageCard>
+    <div class="setting_panel card shadow">
       <div class="setting_item">ratio</div>
       <div class="setting_item">quality</div>
       <div class="setting_item">xxx...</div>
@@ -25,6 +18,7 @@
 </template>
 
 <script>
+import ImageCard from '@/components/ImageCard.vue';
 import RightArrowIcon from '@/components/icons/RightArrowIcon.vue';
 
 export default {
@@ -35,6 +29,7 @@ export default {
     },
   },
   components: {
+    ImageCard,
     RightArrowIcon,
   },
 };
@@ -50,35 +45,6 @@ export default {
     width: 300px;
     margin-right: 40px;
     overflow: hidden;
-
-    .image_wrapper {
-      width: 100%;
-      max-height: 600px;
-      overflow: hidden;
-
-      .image {
-        display: block;
-        width: 100%;
-        height: auto;
-      }
-    }
-
-    .image_info {
-      color: var(--text2);
-      margin: 16px 20px 20px;
-
-      .image_name {
-        @include no-wrap;
-        color: var(--text);
-        font-size: 16px;
-        margin-bottom: 10px;
-      }
-
-      .image_size {
-        font-size: 12px;
-        margin-top: 8px;
-      }
-    }
   }
 
   .setting_panel {
