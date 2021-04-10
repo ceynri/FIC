@@ -2,6 +2,7 @@
 .idea
 data
 save
+beta
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -27,7 +27,7 @@ class DRcon(nn.Module):
             nn.ConvTranspose2d(128,64,kernel_size=3,stride=2,padding=1,output_padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(True)
-        )        
+        )
         self.DconvOp5 = nn.Sequential(
             nn.ConvTranspose2d(64,32,kernel_size=3,stride=2,padding=1,output_padding=1),
             nn.BatchNorm2d(32),
@@ -43,7 +43,8 @@ class DRcon(nn.Module):
             nn.BatchNorm2d(3),
             nn.Tanh()
             # nn.ReLU(True)
-        )       
+        )
+
     def forward(self,x):
         x = self.DconvOp1(x)
         x = self.DconvOp2(x)
@@ -51,5 +52,5 @@ class DRcon(nn.Module):
         x = self.DconvOp4(x)
         x = self.DconvOp5(x)
         x = self.DconvOp6(x)
-        x = self.DconvOp7(x)    
-        return x         
+        x = self.DconvOp7(x)
+        return x
