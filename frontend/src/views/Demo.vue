@@ -23,7 +23,7 @@ import Uploader from '@/components/Uploader.vue';
 import DemoOptions from '@/components/DemoOptions.vue';
 import DemoResult from '@/components/DemoResult.vue';
 
-// import { demoProcess } from '@/service';
+import { demoProcess } from '@/service';
 
 export default {
   data() {
