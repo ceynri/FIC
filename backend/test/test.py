@@ -1,20 +1,21 @@
+import pickle
 import sys
 from os import path
-import pickle
-from PIL import Image
 
 import torch
 import torch.nn as nn
-from facenet_pytorch import InceptionResnetV1
 from autocrop import Cropper
+from facenet_pytorch import InceptionResnetV1
+from PIL import Image
 from torchvision import transforms
 from torchvision.utils import save_image
 
 sys.path.append(path.dirname(path.dirname(path.realpath(__file__))))
 
-from fcn.endtoend import AutoEncoder
-from fcn.DeepRcon import DRcon
-from utils import save_binary_file, tensor_normalize
+from models.compress.model import CompressModel
+from models.recon.deeprecon import DeepRecon
+from utils import tensor_normalize
+from utils.file import File
 
 base_path = './test/result'
 
@@ -64,13 +65,13 @@ if __name__ == '__main__':
     resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda()
 
     # reconstruct face by feature
-    b_layer = DRcon().eval()
+    b_layer = DeepRecon().eval()
     b_layer = b_layer.cuda()
     b_layer = nn.DataParallel(b_layer).cuda()
     b_param = torch.load('./data/b_layer_fcn.pth', map_location='cuda:0')
     b_layer.load_state_dict(b_param)
 
-    e_layer = AutoEncoder().eval().cuda()
+    e_layer = CompressModel().eval().cuda()
     e_layer = CustomDataParallel(e_layer).cuda()
     c_param = torch.load('./data/e_layer_5120.pth', map_location='cuda:0')
     e_layer.load_state_dict(c_param)
@@ -106,7 +107,7 @@ if __name__ == '__main__':
 
         # 保存压缩数据
         fic_path = get_path(f'{file.name}.fic')
-        save_binary_file({
+        File.save_binary({
             'feat': feat,
             'tex': tex,
             'intervals': intervals,
