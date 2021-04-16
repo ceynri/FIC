@@ -8,20 +8,23 @@ from gevent.pywsgi import WSGIServer
 from torch import nn
 from torchvision.utils import save_image
 
-from fcn.DeepRcon import DRcon
-from fcn.endtoend import AutoEncoder
-from utils import (
-    CustomDataParallel, File, load_binary_file, load_image_array,
-    save_binary_file, tensor_normalize, tensor_to_array
-)
-from utils.eval_index import psnr, ssim
+from models.compress.model import CompressModel
+from models.recon.deeprecon import DeepRecon
+from utils import (CustomDataParallel, load_image_array, tensor_normalize,
+                   tensor_to_array)
+from utils.file import File
+from utils.eval import psnr, ssim
 from utils.jpeg import jpeg_compress
 
 app = Flask(__name__)
-# CORS(app, supports_credentials=True)
+
+recon_param_path = './params/b_layer.pth'
+e_param_path = './params/e_layer_5120.pth'
 
 base_path = './public/result'
 base_url = '/assets/result/'
+
+IMAGE_PIXEL_NUM = 256 * 256
 
 
 def get_url(filename):
@@ -35,22 +38,22 @@ def get_path(filename):
 def get_models():
     '''初始化模型'''
 
-    # FaceNet for extracting features
+    # 特征提取的 faceNet
     resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda()
 
-    # reconstruct face by feature
-    b_layer = DRcon().eval()
-    b_layer = b_layer.cuda()
-    b_layer = nn.DataParallel(b_layer).cuda()
-    b_param = torch.load('./data/b_layer_fcn.pth', map_location='cuda:0')
-    b_layer.load_state_dict(b_param)
+    # 深度重建的 base layer
+    recon_net = DeepRecon().eval()
+    recon_net = recon_net.cuda()
+    recon_net = nn.DataParallel(recon_net).cuda()
+    recon_param = torch.load(recon_param_path, map_location='cuda:0')
+    recon_net.load_state_dict(recon_param)
 
-    # enhancement
-    e_layer = AutoEncoder().eval().cuda()
+    # 纹理增强的 enhancement layer
+    e_layer = CompressModel().eval().cuda()
     e_layer = CustomDataParallel(e_layer).cuda()
-    c_param = torch.load('./data/e_layer_5120.pth', map_location='cuda:0')
-    e_layer.load_state_dict(c_param)
-    return resnet, b_layer, e_layer
+    e_param = torch.load(e_param_path, map_location='cuda:0')
+    e_layer.load_state_dict(e_param)
+    return resnet, recon_net, e_layer
 
 
 def extract_feat(img):
@@ -62,13 +65,13 @@ def extract_feat(img):
     feat = feat.cuda()
 
     # 特征重建
-    x_feat = b_layer(feat)
+    x_feat = recon_net(feat)
 
     return feat, x_feat
 
 
 # 模型初始化
-resnet, b_layer, e_layer = get_models()
+resnet, recon_net, e_layer = get_models()
 
 
 @app.route('/')
@@ -110,25 +113,24 @@ def demo_process():
 
         # 保存压缩数据
         fic_path = get_path(f'{file.name}.fic')
-        save_binary_file({
-            'feat': feat,
-            'tex': tex,
-            'intervals': intervals,
-            'ext': file.ext,
-        }, fic_path)
+        File.save_binary(
+            {
+                'feat': feat,
+                'tex': tex,
+                'intervals': intervals,
+                'ext': file.ext,
+            }, fic_path)
         fic_size = path.getsize(fic_path)
-        # TODO 取消魔法值
-        fic_bpp = fic_size / (256 * 256)
+        fic_bpp = fic_size / (IMAGE_PIXEL_NUM * IMAGE_PIXEL_NUM)
 
         feat_path = get_path(f'{file.name}_feat.fic')
-        save_binary_file({
+        File.save_binary({
             'feat': feat,
         }, feat_path)
         feat_size = path.getsize(feat_path)
         tex_size = fic_size - feat_size
-        # TODO 取消魔法值
-        feat_bpp = feat_size / (256 * 256)
-        tex_bpp = tex_size / (256 * 256)
+        feat_bpp = feat_size / (IMAGE_PIXEL_NUM * IMAGE_PIXEL_NUM)
+        tex_bpp = tex_size / (IMAGE_PIXEL_NUM * IMAGE_PIXEL_NUM)
 
         # 待保存图片
         result = {
@@ -191,7 +193,7 @@ def demo_process():
         ret['size']['jpeg'] = jpeg_size
         jpeg_compression_ratio = jpeg_size / input_size
         ret['eval']['jpeg_compression_ratio'] = jpeg_compression_ratio
-        ret['eval']['jpeg_bpp'] = jpeg_size / (256 * 256)
+        ret['eval']['jpeg_bpp'] = jpeg_size / (IMAGE_PIXEL_NUM * IMAGE_PIXEL_NUM)
 
         # 响应请求
         response = jsonify(ret)
@@ -225,12 +227,13 @@ def compress():
         # 保存压缩数据
         fic_name = f'{file.name}.fic'
         fic_path = get_path(fic_name)
-        save_binary_file({
-            'feat': feat,
-            'tex': tex,
-            'intervals': intervals,
-            'ext': file.ext,
-        }, fic_path)
+        File.save_binary(
+            {
+                'feat': feat,
+                'tex': tex,
+                'intervals': intervals,
+                'ext': file.ext,
+            }, fic_path)
         fic_size = path.getsize(fic_path)
 
         # 获取原图大小
@@ -262,18 +265,17 @@ def decompress():
     ret = []
     for rawfile in files:
         # 获取fic对象
-        fic = load_binary_file(rawfile)
+        fic = File.load_binary(rawfile)
         file = File(rawfile)
         with torch.no_grad():
 
             # 特征重建
-            x_feat = b_layer(fic['feat'])
+            x_feat = recon_net(fic['feat'])
 
             # 纹理压缩数据解压
             x_tex_decoded_norm = e_layer.decompress(fic['tex'])
-            x_tex_decoded = tensor_normalize(
-                x_tex_decoded_norm, fic['intervals'], 'anti'
-            )
+            x_tex_decoded = tensor_normalize(x_tex_decoded_norm,
+                                             fic['intervals'], 'anti')
 
         # 获取完整结果图
         x_output = x_feat + x_tex_decoded
