@@ -15,14 +15,14 @@ class File:
         self.bytes = file.read()
         self.name, self.ext = path.splitext(file.filename)
 
-    def load_tensor(self):
+    def load_tensor(self, face_percent : int = 100):
         stream = BytesIO(self.bytes)
         img = Image.open(stream)
         img_array = np.array(img)
         # RGB to BGR for cropper
         img_array = img_array[:, :, [2, 1, 0]]
 
-        cropper = Cropper()
+        cropper = Cropper(face_percent=face_percent)
         img_cropped = cropper.crop(img_array)
         if img_cropped is None:
             raise 'No face recognized!'

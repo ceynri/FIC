@@ -18,8 +18,8 @@ from utils.jpeg import jpeg_compress
 
 app = Flask(__name__)
 
-recon_param_path = './params/b_layer.pth'
-e_param_path = './params/e_layer_5120.pth'
+recon_param_path = './params/recon/30w/baseLayer_5.pth'
+e_param_path = './params/e_layer/enhanceLayer_2.pth'
 
 base_path = './public/result'
 base_url = '/assets/result/'
@@ -121,7 +121,7 @@ def demo_process():
                 'ext': file.ext,
             }, fic_path)
         fic_size = path.getsize(fic_path)
-        fic_bpp = fic_size / (IMAGE_PIXEL_NUM * IMAGE_PIXEL_NUM)
+        fic_bpp = fic_size / IMAGE_PIXEL_NUM
 
         feat_path = get_path(f'{file.name}_feat.fic')
         File.save_binary({
@@ -129,8 +129,8 @@ def demo_process():
         }, feat_path)
         feat_size = path.getsize(feat_path)
         tex_size = fic_size - feat_size
-        feat_bpp = feat_size / (IMAGE_PIXEL_NUM * IMAGE_PIXEL_NUM)
-        tex_bpp = tex_size / (IMAGE_PIXEL_NUM * IMAGE_PIXEL_NUM)
+        feat_bpp = feat_size / IMAGE_PIXEL_NUM
+        tex_bpp = tex_size / IMAGE_PIXEL_NUM
 
         # 待保存图片
         result = {
@@ -193,7 +193,7 @@ def demo_process():
         ret['size']['jpeg'] = jpeg_size
         jpeg_compression_ratio = jpeg_size / input_size
         ret['eval']['jpeg_compression_ratio'] = jpeg_compression_ratio
-        ret['eval']['jpeg_bpp'] = jpeg_size / (IMAGE_PIXEL_NUM * IMAGE_PIXEL_NUM)
+        ret['eval']['jpeg_bpp'] = jpeg_size / IMAGE_PIXEL_NUM
 
         # 响应请求
         response = jsonify(ret)
