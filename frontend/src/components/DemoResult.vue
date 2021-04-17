@@ -6,7 +6,7 @@
         @mouseover="changeImage('in')"
         @mouseleave="changeImage('out')"
       >
-        <div class="contrast_image card">
+        <div class="contrast_image card shadow">
           <img class="image" :src="image.input" alt="input image" />
           <div class="image_info">
             <div class="image_name">original image</div>
@@ -52,14 +52,14 @@
     </div>
     <div class="card_wrapper" v-viewer="{ filter: excludeIcon }">
       <!-- TODO 提供下载/查看原图功能 -->
-      <ImageCard class="card clickable" :src="image.input" name="input"></ImageCard>
-      <ImageCard class="card clickable" :src="image.feat" name="feature"></ImageCard>
-      <ImageCard class="card clickable" :src="image.output" name="output"></ImageCard>
-      <ImageCard class="card clickable" :src="image.jpeg" name="jpeg"></ImageCard>
-      <ImageCard class="card clickable" :src="image.tex" name="texture"></ImageCard>
-      <ImageCard class="card clickable" :src="image.tex_decoded" name="decoded texture"></ImageCard>
+      <ImageCard class="clickable" :src="image.input" name="input"></ImageCard>
+      <ImageCard class="clickable" :src="image.feat" name="feature"></ImageCard>
+      <ImageCard class="clickable" :src="image.output" name="output"></ImageCard>
+      <ImageCard class="clickable" :src="image.jpeg" name="jpeg"></ImageCard>
+      <ImageCard class="clickable" :src="image.tex" name="texture"></ImageCard>
+      <ImageCard class="clickable" :src="image.tex_decoded" name="decoded texture"></ImageCard>
       <ImageCard
-        class="card clickable"
+        class="clickable"
         name="compress data"
         src="/assets/archive.png"
         is-icon
@@ -163,7 +163,7 @@ export default {
       .image_info {
         display: flex;
         justify-content: space-between;
-        margin: 12px;
+        padding: 12px;
       }
     }
 
