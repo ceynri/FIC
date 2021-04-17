@@ -4,8 +4,8 @@ from facenet_pytorch import InceptionResnetV1
 from torch import Tensor, nn
 from utils import CustomDataParallel, tensor_normalize
 
-from models.compress.model import CompressModel
-from models.recon.deeprecon import DeepRecon
+from models.base.deeprecon import DeepRecon
+from models.enhancement.gdnmodel import CompressModel
 
 
 class Model:
