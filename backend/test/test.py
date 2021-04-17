@@ -12,8 +12,8 @@ from torchvision.utils import save_image
 
 sys.path.append(path.dirname(path.dirname(path.realpath(__file__))))
 
-from models.compress.model import CompressModel
-from models.recon.deeprecon import DeepRecon
+from models.base.deeprecon import DeepRecon
+from models.enhancement.gdnmodel import CompressModel
 from utils import tensor_normalize
 from utils.file import File
 
