@@ -9,8 +9,8 @@ def jpeg_compress(input_path, output_path='', size=5120, step=1, quality=80):
     if file_size <= size:
         return input_path
     if output_path == '':
-        name, _ = path.splitext(input_path.filename)
-        output_path = f'{name}_jpeg.jpg'
+        path_name, _ = path.splitext(input_path.filename)
+        output_path = f'{path_name}_jpeg.jpg'
     q = quality
     while file_size > size:
         im = Image.open(input_path)
