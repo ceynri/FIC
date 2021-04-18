@@ -12,16 +12,15 @@ from torchvision.utils import save_image
 
 sys.path.append(path.dirname(path.dirname(path.realpath(__file__))))
 
+import config as conf
 from models.base.deeprecon import DeepRecon
 from models.enhancement.gdnmodel import CompressModel
 from utils import tensor_normalize
 from utils.file import File
 
-base_path = './test/result'
-
 
 def get_path(filename):
-    return path.join(base_path, filename)
+    return path.join(conf.BASE_PATH, filename)
 
 
 class File:
@@ -35,7 +34,7 @@ class File:
         img_cropped = cropper.crop(self.path)
         img = Image.fromarray(img_cropped)
         loader = transforms.Compose([
-            transforms.Resize((256, 256)),
+            transforms.Resize(conf.IMAGE_SHAPE),
             transforms.ToTensor()
         ])
         tensor = loader(img).unsqueeze(0)

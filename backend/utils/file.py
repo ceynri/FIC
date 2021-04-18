@@ -7,6 +7,7 @@ from autocrop import Cropper
 from PIL import Image
 from torchvision import transforms
 import pickle
+import config as conf
 
 
 class File:
@@ -29,7 +30,7 @@ class File:
         img = Image.fromarray(img_cropped)
 
         loader = transforms.Compose([
-            transforms.Resize((256, 256)),
+            transforms.Resize(conf.IMAGE_SHAPE),
             transforms.ToTensor()
         ])
         tensor = loader(img).unsqueeze(0)

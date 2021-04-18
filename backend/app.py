@@ -17,11 +17,11 @@ app = Flask(__name__)
 
 
 def get_url(filename):
-    return path.join(conf.base_url, filename)
+    return path.join(conf.BASE_URL, filename)
 
 
 def get_path(filename):
-    return path.join(conf.base_path, filename)
+    return path.join(conf.BASE_PATH, filename)
 
 
 # 模型初始化
@@ -217,8 +217,9 @@ def decompress():
         # 获取完整结果图
         x_output = data['recon'] + data['resi_decoded']
 
-        # file_name = file.name_suffix('fic', ext='.bmp')
-        file_name = file.name_suffix('fic', ext=fic['ext'])
+        # 保存结果图片
+        file_name = file.name_suffix('fic', ext='.bmp')
+        # file_name = file.name_suffix('fic', ext=fic['ext'])
         file_path = get_path(file_name)
         save_image(x_output, file_path)
 
