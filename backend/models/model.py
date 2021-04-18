@@ -83,24 +83,3 @@ class Model:
             'resi_decoded': resi_decoded,
             'resi_decoded_norm': resi_decoded_norm,
         }
-
-    def encode_decode(self, input: Tensor) -> dict:
-        '''人脸图像编码和解码，用于模型演示'''
-
-        e = self.encode(input)
-        d = self.decode(feat=e['feat'],
-                        tex=e['tex'],
-                        intervals=e['intervals'],
-                        recon=e['recon'])
-
-        return {
-            'feat': e['feat'],
-            'recon': e['recon'],
-            'resi': d['resi'],
-            'resi_norm': d['resi_norm'],
-            'tex': e['tex'],
-            'resi_decoded': d['resi_decoded'],
-            'resi_decoded_norm': d['resi_decoded_norm'],
-            'output': d['output'],
-            'intervals': e['intervals'],
-        }

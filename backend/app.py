@@ -47,7 +47,12 @@ def demo_process():
     input = file.load_tensor().cuda()
 
     # 输入模型，得到返回结果
-    data = model.encode_decode(input)
+    e = model.encode(input)
+    d = model.decode(feat=e['feat'],
+                     tex=e['tex'],
+                     intervals=e['intervals'],
+                     recon=e['recon'])
+    data = e.update(d)
 
     # 保存压缩数据
     fic_path = get_path(f'{file.name}.fic')
