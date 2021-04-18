@@ -232,6 +232,6 @@ def decompress():
 if __name__ == '__main__':
     # 监听服务端口
     port = 1127
-    print(f'Start serving style transfer at port {port}...')
+    print(f'Start serving FIC at port {port}...')
     http_server = WSGIServer(('0.0.0.0', port), app)
     http_server.serve_forever()
