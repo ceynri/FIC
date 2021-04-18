@@ -45,27 +45,31 @@ class Model:
         with torch.no_grad():
             # 特征提取
             feat = self.feat_extract(input)
-
             # 特征重建
             recon = self.recon_net(feat)
 
             # 残差图
             resi = (input - recon).cuda()
-
             # 残差图压缩
             resi_norm, intervals = tensor_normalize(resi)
             resi_norm = resi_norm.cuda()
             tex = self.e_layer.compress(resi_norm)
 
         return {
+            'input': input,
             'feat': feat,
             'recon': recon,
+            'resi': resi,
+            'resi_norm': resi_norm,
             'tex': tex,
             'intervals': intervals,
         }
 
-    def decode(self, feat: Tensor, tex: Tensor, intervals: Tensor,
-               recon: Tensor or None) -> dict:
+    def decode(self,
+               feat: Tensor,
+               tex: Tensor,
+               intervals: Tensor,
+               recon: Tensor or None = None) -> dict:
         '''人脸图像解码'''
 
         with torch.no_grad():
@@ -77,9 +81,11 @@ class Model:
             resi_decoded_norm = self.e_layer.decompress(tex)
             resi_decoded = tensor_normalize(resi_decoded_norm, intervals,
                                             'anti')
+            output = recon + resi_decoded
 
         return {
             'recon': recon,
             'resi_decoded': resi_decoded,
             'resi_decoded_norm': resi_decoded_norm,
+            'output': output,
         }

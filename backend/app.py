@@ -47,12 +47,12 @@ def demo_process():
     input = file.load_tensor().cuda()
 
     # 输入模型，得到返回结果
-    e = model.encode(input)
-    d = model.decode(feat=e['feat'],
-                     tex=e['tex'],
-                     intervals=e['intervals'],
-                     recon=e['recon'])
-    data = e.update(d)
+    e_data = model.encode(input)
+    d_data = model.decode(feat=e_data['feat'],
+                          tex=e_data['tex'],
+                          intervals=e_data['intervals'],
+                          recon=e_data['recon'])
+    data = {**e_data, **d_data}
 
     # 保存压缩数据
     fic_path = get_path(f'{file.name}.fic')
@@ -79,21 +79,6 @@ def demo_process():
     tex_size = fic_size - feat_size
     tex_bpp = tex_size / conf.IMAGE_PIXEL_NUM
 
-    # 计算压缩率
-    input_path = get_path(file.name_suffix('input', ext='.bmp'))
-    input_size = path.getsize(input_path)
-    fic_compression_ratio = fic_size / input_size
-
-    # jpeg对照组处理
-    jpeg_name = file.name_suffix('jpeg', ext='.jpg')
-    jpeg_path = get_path(jpeg_name)
-    jpeg_compress(input_path, jpeg_path, size=tex_size, quality=50)
-
-    # jpeg 相关参数计算
-    jpeg_size = path.getsize(jpeg_path)
-    jpeg_compression_ratio = jpeg_size / input_size
-    jpeg_bpp = jpeg_size / conf.IMAGE_PIXEL_NUM
-
     # 待保存图片 # TODO RENAME
     imgs = {
         'input': data['input'],
@@ -103,7 +88,6 @@ def demo_process():
         'tex_norm': data['resi_norm'],
         'tex_decoded_norm': data['resi_decoded_norm'],
         'output': data['output'],
-        'jpeg': jpeg_path,
     }
 
     # 将 imgs 保存并获得对应URL
@@ -114,8 +98,24 @@ def demo_process():
         file_path = get_path(file_name)
         save_image(value, file_path)
         # 返回图片url链接
-        # ret['image'][key] = get_url(file_name)
         img_urls[key] = get_url(file_name)
+
+    # 计算压缩率
+    input_name = file.name_suffix('input', ext='.bmp')
+    input_path = get_path(input_name)
+    input_size = path.getsize(input_path)
+    fic_compression_ratio = fic_size / input_size
+
+    # jpeg对照组处理
+    jpeg_name = file.name_suffix('jpeg', ext='.jpg')
+    jpeg_path = get_path(jpeg_name)
+    jpeg_compress(input_path, jpeg_path, size=tex_size, quality=50)
+    img_urls['jpeg'] = get_url(jpeg_name)
+
+    # jpeg 相关参数计算
+    jpeg_size = path.getsize(jpeg_path)
+    jpeg_compression_ratio = jpeg_size / input_size
+    jpeg_bpp = jpeg_size / conf.IMAGE_PIXEL_NUM
 
     # 其他数据
     input_arr = tensor_to_array(data['input'])
