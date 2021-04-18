@@ -18,14 +18,14 @@ class Model:
         # 深度重建的 base layer
         recon_net = DeepRecon().eval().cuda()
         recon_net = nn.DataParallel(recon_net).cuda()
-        recon_param = torch.load(conf.recon_param_path, map_location='cuda:0')
+        recon_param = torch.load(conf.RECON_PARAM_PATH, map_location='cuda:0')
         recon_net.load_state_dict(recon_param)
         self.recon_net = recon_net
 
         # 纹理增强的 enhancement layer
         e_layer = CompressModel().eval().cuda()
         e_layer = CustomDataParallel(e_layer).cuda()
-        e_param = torch.load(conf.e_param_path, map_location='cuda:0')
+        e_param = torch.load(conf.E_LAYER_PARAM_PATH, map_location='cuda:0')
         e_layer.load_state_dict(e_param)
         self.e_layer = e_layer
 
