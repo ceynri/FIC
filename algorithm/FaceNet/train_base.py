@@ -8,7 +8,6 @@ from DeepRcon import DRcon
 from perceptual_loss import Perc
 from torch.optim.lr_scheduler import ExponentialLR
 from torch.utils.tensorboard import SummaryWriter
-from torchvision.utils import save_image
 
 
 def cosine_score(label, pred):

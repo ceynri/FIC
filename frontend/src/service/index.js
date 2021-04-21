@@ -1,13 +1,16 @@
 import axios from 'axios';
 
 export async function demoProcess(file) {
+  // 文件包装
   const data = new FormData();
   data.append('file', file);
+  // API请求
   const res = await axios.post('/api/demo_process', data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
+  // 获取返回结果
   return res.data;
 }
 

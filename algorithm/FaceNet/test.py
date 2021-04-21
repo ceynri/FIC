@@ -6,7 +6,6 @@ from endtoend import ImageCompressor
 from torch import nn
 from facenet_pytorch import InceptionResnetV1
 from DeepRcon import DRcon
-# from bit_estimate import BitEstimator
 
 if __name__ == "__main__":
     resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda()
