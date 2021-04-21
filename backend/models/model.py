@@ -12,17 +12,21 @@ class Model:
     def __init__(self):
         '''初始化模型'''
 
-        # 特征提取的 faceNet
+        # base layer
+
+        # 特征提取模型
         self.resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda()
 
-        # 深度重建的 base layer
+        # 深度重建模型
         recon_net = DeepRecon().eval().cuda()
         recon_net = nn.DataParallel(recon_net).cuda()
         recon_param = torch.load(conf.RECON_PARAM_PATH, map_location='cuda:0')
         recon_net.load_state_dict(recon_param)
         self.recon_net = recon_net
 
-        # 纹理增强的 enhancement layer
+        # enhancement layer
+
+        # 纹理压缩模型
         e_layer = CompressModel().eval().cuda()
         e_layer = CustomDataParallel(e_layer).cuda()
         e_param = torch.load(conf.E_LAYER_PARAM_PATH, map_location='cuda:0')
