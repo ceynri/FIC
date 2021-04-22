@@ -14,6 +14,7 @@ from utils.file import File
 from utils.jpeg import dichotomy_compress
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 
 def get_url(filename):
@@ -42,7 +43,11 @@ def demo_process():
     # 获取文件对象
     file = request.files['file']
     file = File(file)
-
+    
+    feature_model = request.form['feature_model']
+    quality_level = request.form['quality_level']
+    if model.quality_level != quality_level:
+        model.switch_quality_level(quality_level)
     # 将二进制转为tensor
     input = file.load_tensor().cuda()
 
