@@ -1,9 +1,12 @@
 import axios from 'axios';
 
-export async function demoProcess(file) {
+export async function demoProcess(file, options) {
   // 文件包装
   const data = new FormData();
   data.append('file', file);
+  data.append('feature_model', options.featureModel);
+  data.append('quality_level', options.qualityLevel);
+
   // API请求
   const res = await axios.post('/api/demo_process', data, {
     headers: {
