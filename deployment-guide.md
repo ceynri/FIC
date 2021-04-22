@@ -157,7 +157,7 @@ Nginx 启动方法根据安装方式等实际情况有所区别，具体以安�
 
 Nginx 的配置文件为 `nginx.conf`，具体位置也因 Nginx 的安装方式而有不同，典型的位置例如`/etc/nginx/nginx.conf`、`/usr/local/bin/nginx/conf/nginx.conf`。
 
-配置规则可以参考网络教程（例如[这个](https://blog.51cto.com/u_13363488/2349546)），这里简单举一下静态资源代理和接口服务反响代理的相关配置方式的例子：
+配置规则可以参考网络教程（例如[这个](https://blog.51cto.com/u_13363488/2349546)），这里简单举一下静态资源代理和接口服务反向代理的相关配置方式的例子：
 
 ```conf
 # nginx.conf
@@ -220,11 +220,6 @@ http {
 import Axios from 'axios';
 
 export default {
-    data() {
-        return {
-            fileNameSet: new Set(),
-        }
-    },
     methods: {
         /**
          * 从原生Input文件中获取files
