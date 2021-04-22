@@ -13,7 +13,7 @@
       </header>
     </div>
     <Uploader v-if="state === 1" v-model="fileList" type="image" :multiple="false" />
-    <DemoOptions v-else-if="state === 2" :image="image" @next="process" />
+    <DemoOptions v-else-if="state === 2" v-model="options" :image="image" @next="process" />
     <DemoResult v-else :data="result" />
   </section>
 </template>
@@ -31,6 +31,10 @@ export default {
       image: null,
       result: null,
       fileList: [],
+      options: {
+        featureModel: 'facenet',
+        qualityLevel: 'medium',
+      },
     };
   },
   computed: {
@@ -75,7 +79,7 @@ export default {
   methods: {
     async process() {
       try {
-        this.result = await demoProcess(this.image.rawFile);
+        this.result = await demoProcess(this.image.rawFile, this.options);
         console.debug('demoProcess', this.result);
       } catch (e) {
         console.error('demo process error', e);
