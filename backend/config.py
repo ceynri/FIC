@@ -1,6 +1,6 @@
 # 参数文件路径
 RECON_PARAM_PATH = './params/recon/30w/baseLayer_7.pth'
-E_LAYER_PARAM_PATH = './params/e_layer/enhanceLayer_10.pth'
+E_LAYER_PARAM_PATH = './params/e_layer/5120/enhanceLayer_10.pth'
 
 # 图片保存位置
 BASE_PATH = './public/result'

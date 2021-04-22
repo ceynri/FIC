@@ -19,7 +19,7 @@ from models.enhancement.gdnmodel import CompressModel
 from utils import load_image_array, tensor_normalize, tensor_to_array
 from utils.eval import psnr, ssim
 from utils.file import File
-from utils.jpeg import jpeg_compress
+from utils.jpeg import dichotomy_compress
 
 
 def get_path(filename):
@@ -91,8 +91,8 @@ if __name__ == '__main__':
 
     e_layer = CompressModel().eval().cuda()
     e_layer = CustomDataParallel(e_layer).cuda()
-    c_param = torch.load('../params/e_layer/5120/enhanceLayer_6.pth',
-                         map_location='cuda:0')
+    c_param = torch.load('../params/e_layer/5120/enhanceLayer_7.pth', map_location='cuda:0')
+    # c_param = torch.load('../params/e_layer/1024/gdnmodel_10.pth', map_location='cuda:0')
     e_layer.load_state_dict(c_param)
 
     file_path = sys.argv[1]
@@ -181,7 +181,7 @@ if __name__ == '__main__':
         # jpeg对照组处理
         jpeg_name = file.name_suffix('jpeg', ext='.jpg')
         jpeg_path = get_path(jpeg_name)
-        jpeg_compress(input_path, jpeg_path, size=tex_size, quality=50)
+        dichotomy_compress(input_path, jpeg_path, target_size=tex_size)
 
         # jpeg 相关参数计算
         jpeg_size = path.getsize(jpeg_path)
