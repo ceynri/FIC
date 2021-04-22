@@ -11,7 +11,7 @@ from models.model import Model
 from utils import load_image_array, tensor_to_array
 from utils.eval import psnr, ssim
 from utils.file import File
-from utils.jpeg import jpeg_compress
+from utils.jpeg import dichotomy_compress
 
 app = Flask(__name__)
 
@@ -109,7 +109,7 @@ def demo_process():
     # jpeg对照组处理
     jpeg_name = file.name_suffix('jpeg', ext='.jpg')
     jpeg_path = get_path(jpeg_name)
-    jpeg_compress(input_path, jpeg_path, size=tex_size, quality=50)
+    dichotomy_compress(input_path, jpeg_path, target_size=tex_size)
     img_urls['jpeg'] = get_url(jpeg_name)
 
     # jpeg 相关参数计算
