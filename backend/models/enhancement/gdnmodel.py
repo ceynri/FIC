@@ -48,7 +48,7 @@ class Synthesis(nn.Module):
         return x
 
 
-class CompressModel(CompressionModel):
+class GdnModel(CompressionModel):
     def __init__(self, N=128):
         super().__init__(entropy_bottleneck_channels=N)
 
