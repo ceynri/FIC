@@ -60,12 +60,9 @@ class File:
         return file_name
 
     @classmethod
-    def load_binary(cls, file, save_path: str = './public/temp/'):
-        save_path = path.join(save_path, file.filename)
-        file.save(save_path)
-        with open(save_path, 'rb') as f:
-            data = pickle.load(f)
-            return data
+    def load_binary(cls, file):
+        data = pickle.load(file)
+        return data
 
 
 class CustomDataParallel(nn.DataParallel):
