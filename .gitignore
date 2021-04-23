@@ -3,6 +3,7 @@
 data
 save
 beta
+/test_image
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
