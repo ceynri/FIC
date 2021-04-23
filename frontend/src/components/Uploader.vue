@@ -20,8 +20,13 @@
             <template v-else>{{ item.result.name }}</template>
           </div>
           <div class="image_size">
-            {{ sizeFormat(item.size) }}
-            <template v-if="item.result">
+            <template v-if="type == 'image' || !item.result">
+              {{ sizeFormat(item.size) }}
+            </template>
+            <template v-else>
+              {{ sizeFormat(item.result.size) }}
+            </template>
+            <template v-if="type == 'image' && item.result">
               -> {{ sizeFormat(item.result.size) }}
               <template v-if="type == 'image'"
                 >({{ percentFormat(item.result.size / item.size) }})</template
