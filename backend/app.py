@@ -43,7 +43,7 @@ def demo_process():
     # 获取文件对象
     file = request.files['file']
     file = File(file)
-    
+
     feature_model = request.form['feature_model']
     quality_level = request.form['quality_level']
     if model.quality_level != quality_level:
@@ -223,8 +223,8 @@ def decompress():
         x_output = data['recon'] + data['resi_decoded']
 
         # 保存结果图片
-        file_name = file.name_suffix('fic', ext='.bmp')
-        # file_name = file.name_suffix('fic', ext=fic['ext'])
+        # file_name = file.name_suffix('fic', ext='.bmp')
+        file_name = file.name_suffix('fic', ext=fic['ext'])
         file_path = get_path(file_name)
         save_image(x_output, file_path)
 
