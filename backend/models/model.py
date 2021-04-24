@@ -4,8 +4,8 @@ from facenet_pytorch import InceptionResnetV1
 from torch import Tensor, nn
 from utils import CustomDataParallel, tensor_normalize
 
-from models.base.deeprecon import DeepRecon
-from models.enhancement.gdnmodel import GdnModel
+from models.base.deconv_recon import DeconvRecon
+from models.enhancement.gdn_model import GdnModel
 
 
 class Model:
@@ -21,7 +21,7 @@ class Model:
         # TODO more feature model
 
         # 反卷积重建网络
-        recon_net = DeepRecon().eval().cuda()
+        recon_net = DeconvRecon().eval().cuda()
         recon_net = nn.DataParallel(recon_net).cuda()
         recon_param = torch.load(conf.RECON_PARAM_PATH, map_location='cuda:0')
         recon_net.load_state_dict(recon_param)
