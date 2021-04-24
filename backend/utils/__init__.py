@@ -1,8 +1,8 @@
-from PIL import Image
-import torch
-from torch import nn
-
+import config as conf
 import numpy as np
+import torch
+from PIL import Image
+from torch import nn
 
 
 def load_image_array(path: str):
@@ -28,6 +28,10 @@ def tensor_normalize(
     if mode != 'anti':
         return ((tensor - min) / (max - min)), (min, max)
     return tensor * (max - min) + min
+
+
+def get_bpp(size):
+    return size * 8 / conf.IMAGE_PIXEL_NUM
 
 
 class CustomDataParallel(nn.DataParallel):

@@ -8,7 +8,7 @@ from torchvision.utils import save_image
 
 import config as conf
 from models.model import Model
-from utils import load_image_array, tensor_to_array
+from utils import load_image_array, tensor_to_array, get_bpp
 from utils.eval import psnr, ssim
 from utils.file import File
 from utils.jpeg import dichotomy_compress
@@ -70,7 +70,7 @@ def demo_process():
         }, fic_path)
     # fic 相关参数
     fic_size = path.getsize(fic_path)
-    fic_bpp = fic_size / conf.IMAGE_PIXEL_NUM
+    fic_bpp = get_bpp(fic_size)
 
     # 单独保存特征以计算特征和纹理的大小
     feat_path = get_path(f'{file.name}_feat.fic')
@@ -79,10 +79,10 @@ def demo_process():
     }, feat_path)
     # 特征相关参数
     feat_size = path.getsize(feat_path)
-    feat_bpp = feat_size / conf.IMAGE_PIXEL_NUM
+    feat_bpp = get_bpp(feat_size)
     # 纹理相关参数
     tex_size = fic_size - feat_size
-    tex_bpp = tex_size / conf.IMAGE_PIXEL_NUM
+    tex_bpp = get_bpp(tex_size)
 
     # 待保存图片 # TODO RENAME
     imgs = {
@@ -120,7 +120,7 @@ def demo_process():
     # jpeg 相关参数计算
     jpeg_size = path.getsize(jpeg_path)
     jpeg_compression_ratio = jpeg_size / input_size
-    jpeg_bpp = jpeg_size / conf.IMAGE_PIXEL_NUM
+    jpeg_bpp = get_bpp(jpeg_size)
 
     # 其他数据
     input_arr = tensor_to_array(data['input'])
