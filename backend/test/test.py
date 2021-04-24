@@ -14,8 +14,8 @@ from torchvision.utils import save_image
 sys.path.append(path.dirname(path.dirname(path.realpath(__file__))))
 
 import config as conf
-from models.base.deeprecon import DeepRecon
-from models.enhancement.gdnmodel import GdnModel
+from models.base.deconv_recon import DeconvRecon
+from models.enhancement.gdn_model import GdnModel
 from utils import load_image_array, tensor_normalize, tensor_to_array
 from utils.eval import psnr, ssim
 from utils.file import File
@@ -79,17 +79,17 @@ if __name__ == '__main__':
     resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda()
 
     # reconstruct face by feature
-    b_layer = DeepRecon().eval()
+    b_layer = DeconvRecon().eval()
     b_layer = b_layer.cuda()
     b_layer = nn.DataParallel(b_layer).cuda()
-    b_param = torch.load('../params/recon/30w/baseLayer_7.pth',
+    b_param = torch.load('../params/deconv_recon/30w/baseLayer_7.pth',
                          map_location='cuda:0')
     b_layer.load_state_dict(b_param)
 
     e_layer = GdnModel().eval().cuda()
     e_layer = CustomDataParallel(e_layer).cuda()
-    c_param = torch.load('../params/e_layer/5120/enhanceLayer_7.pth', map_location='cuda:0')
-    # c_param = torch.load('../params/e_layer/1024/gdnmodel_10.pth', map_location='cuda:0')
+    c_param = torch.load('../params/gdn_model/5120/enhanceLayer_7.pth', map_location='cuda:0')
+    # c_param = torch.load('../params/gdn_model/1024/gdnmodel_10.pth', map_location='cuda:0')
     e_layer.load_state_dict(c_param)
 
     file_path = sys.argv[1]
