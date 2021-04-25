@@ -1,12 +1,10 @@
-# compiled output
-/service/dataset
-/service/result
 /public/temp
 /public/result
-/start.sh
 /test/*.jpg
 /test/*.bmp
 /test/result
 
 # too large to github
+params
+data
 /data/*.pth
