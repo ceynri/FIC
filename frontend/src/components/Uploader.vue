@@ -71,8 +71,7 @@
       </IconBase>
       <div class="tips" v-else-if="!isAdded">
         <div class="tips_line">Click here to upload image</div>
-        <!-- TODO 判断是否为移动端 -->
-        <div class="tips_line" v-if="true">or drop image here 😊</div>
+        <div class="tips_line">or drop image here 😊</div>
       </div>
       <div class="tips" v-else>Add more...</div>
       <input
@@ -191,9 +190,7 @@ export default {
       files.forEach(async (file) => {
         // 去重
         if (this.fileNameSet.has(file.name)) {
-          // TODO 可改为 Bubbling prompt
           console.warn(`Duplicate file：${file.name}`);
-          // console.error(`Duplicate file：${file.name}`);
           return;
         }
         this.fileNameSet.add(file.name);

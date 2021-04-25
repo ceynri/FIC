@@ -151,14 +151,14 @@ if __name__ == '__main__':
         tex_size = fic_size - feat_size
         tex_bpp = tex_size / conf.IMAGE_PIXEL_NUM
 
-        # 待保存图片 # TODO RENAME
+        # 待保存图片
         imgs = {
             'input': input,
-            'feat': recon,
-            'tex': resi,
-            'tex_decoded': resi_decoded,
-            'tex_norm': resi_norm,
-            'tex_decoded_norm': resi_decoded_norm,
+            'recon': recon,
+            'resi': resi,
+            'resi_decoded': resi_decoded,
+            'resi_norm': resi_norm,
+            'resi_decoded_norm': resi_decoded_norm,
             'output': output,
         }
 

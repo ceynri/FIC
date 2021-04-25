@@ -32,7 +32,7 @@
             <div>{{ data.eval.tex_bpp.toFixed(3) }} bpp</div>
             <div>{{ data.size.tex }} bytes (texture size)</div>
             <div>{{ data.size.feat }} bytes (feature size)</div>
-            <div>PSNR {{ data.eval.fic_psnr.toFixed(6) }}</div>
+            <div>PSNR {{ data.eval.fic_psnr.toFixed(2) }}</div>
             <div>SSIM {{ data.eval.fic_ssim.toFixed(6) }}</div>
           </div>
         </div>
@@ -44,20 +44,19 @@
           <div class="image_info">
             <div>{{ data.eval.jpeg_bpp.toFixed(3) }} bpp</div>
             <div>{{ data.size.jpeg }} bytes</div>
-            <div>PSNR {{ data.eval.jpeg_psnr.toFixed(6) }}</div>
+            <div>PSNR {{ data.eval.jpeg_psnr.toFixed(2) }}</div>
             <div>SSIM {{ data.eval.jpeg_ssim.toFixed(6) }}</div>
           </div>
         </div>
       </div>
     </div>
     <div class="card_wrapper" v-viewer="{ filter: excludeIcon }">
-      <!-- TODO 提供下载/查看原图功能 -->
       <ImageCard class="clickable" :src="image.input" name="input"></ImageCard>
-      <ImageCard class="clickable" :src="image.feat" name="feature"></ImageCard>
+      <ImageCard class="clickable" :src="image.recon" name="feature"></ImageCard>
       <ImageCard class="clickable" :src="image.output" name="output"></ImageCard>
       <ImageCard class="clickable" :src="image.jpeg" name="jpeg"></ImageCard>
-      <ImageCard class="clickable" :src="image.tex" name="texture"></ImageCard>
-      <ImageCard class="clickable" :src="image.tex_decoded" name="decoded texture"></ImageCard>
+      <ImageCard class="clickable" :src="image.resi" name="texture"></ImageCard>
+      <ImageCard class="clickable" :src="image.resi_decoded" name="decoded texture"></ImageCard>
       <ImageCard
         class="clickable"
         name="compress data"

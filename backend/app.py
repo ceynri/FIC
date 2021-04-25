@@ -84,14 +84,14 @@ def demo_process():
     tex_size = fic_size - feat_size
     tex_bpp = get_bpp(tex_size)
 
-    # 待保存图片 # TODO RENAME
+    # 待保存图片
     imgs = {
         'input': data['input'],
-        'feat': data['recon'],
-        'tex': data['resi'],
-        'tex_decoded': data['resi_decoded'],
-        'tex_norm': data['resi_norm'],
-        'tex_decoded_norm': data['resi_decoded_norm'],
+        'recon': data['recon'],
+        'resi': data['resi'],
+        'resi_decoded': data['resi_decoded'],
+        'resi_norm': data['resi_norm'],
+        'resi_decoded_norm': data['resi_decoded_norm'],
         'output': data['output'],
     }
 
@@ -146,7 +146,8 @@ def demo_process():
         'size': {
             'fic': fic_size,
             'input': input_size,
-            'output': fic_size,
+            # 'output': fic_size,
+            'output': tex_size,
             'feat': feat_size,
             'tex': tex_size,
             'jpeg': jpeg_size,
