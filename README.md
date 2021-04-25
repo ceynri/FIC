@@ -69,3 +69,7 @@
 图像解压页：上传压缩文件 -> 下载还原图
 
 ![Decompress.gif](https://i.loli.net/2021/04/25/ndytTNa5xvDJosL.gif)
+
+## 其他
+
+- [深度学习算法服务的搭建与部署教程](deployment-guide.md)
