@@ -7,9 +7,9 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 from dataset import collate, dataset
-from DeepRcon import DRcon
-from endtoend import AutoEncoder
-from RateDistortionLoss import RateDistortionLoss
+from deconv_recon import DeconvRecon
+from gdn_model import GdnModel
+from rate_distortion_loss import RateDistortionLoss
 
 # config
 DATASET_DIR = 'path/to/your/dataset/dir'
@@ -74,12 +74,12 @@ if __name__ == '__main__':
     resnet = nn.DataParallel(resnet, CUDA_LIST)
 
     # reconstruct face by feature
-    Base = DRcon().cuda(CUDA_IDX)
+    Base = DeconvRecon().cuda(CUDA_IDX)
     Base = nn.DataParallel(Base, CUDA_LIST)
     param = torch.load(BASE_PARAM_PATH, map_location='cuda:0')
     Base.load_state_dict(param)
 
-    codec = AutoEncoder().cuda(CUDA_IDX)
+    codec = GdnModel().cuda(CUDA_IDX)
     codec = CustomDataParallel(codec, CUDA_LIST)
     optimizer, aux_optimizer = configure_optimizers(codec,
                                                     lr=1e-3,
