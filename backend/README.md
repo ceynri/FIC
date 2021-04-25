@@ -22,4 +22,4 @@
 
 ## 预训练模型
 
-见 Github releases
+见 [Github releases](https://github.com/ceynri/FIC/releases)

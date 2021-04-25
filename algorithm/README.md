@@ -31,6 +31,10 @@
 
 VGGFace2
 
+## 预训练模型
+
+见 [Github releases](https://github.com/ceynri/FIC/releases)
+
 ## 开源代码参考
 
 - [InterDigitalInc/CompressAI](https://github.com/InterDigitalInc/CompressAI)
