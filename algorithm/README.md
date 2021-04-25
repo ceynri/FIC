@@ -30,3 +30,8 @@
 ## 训练数据集
 
 VGGFace2
+
+## 开源代码参考
+
+- [InterDigitalInc/CompressAI](https://github.com/InterDigitalInc/CompressAI)
+- [tensorflow/compression](https://github.com/tensorflow/compression)
