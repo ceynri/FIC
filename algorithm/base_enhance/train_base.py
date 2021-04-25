@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 from dataset import collate, dataset
-from DeepRcon import DRcon
+from deconv_recon import DeconvRecon
 from perceptual_loss import Perc
 
 # config
@@ -38,7 +38,7 @@ if __name__ == '__main__':
                     pin_memory=True,
                     collate_fn=collate)
 
-    model = DRcon()
+    model = DeconvRecon()
     model = model.cuda(CUDA_IDX)
 
     model = torch.nn.DataParallel(model, [CUDA_IDX])

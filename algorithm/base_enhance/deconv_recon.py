@@ -4,9 +4,9 @@ from torch import nn
 # including de-convolution layer, batchnormalization layer
 # and ReLU activation (the activation function of the last layer is Tanh).
 
-class DRcon(nn.Module):
+class DeconvRecon(nn.Module):
     def __init__(self):
-        super(DRcon,self).__init__()
+        super(DeconvRecon,self).__init__()
         # DconvOp
         self.DconvOp1 = nn.Sequential(
             nn.ConvTranspose2d(512,512,kernel_size=8,stride=2),
