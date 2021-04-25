@@ -6,11 +6,11 @@ from Ganloss import GANloss
 from pytorch_msssim import ssim
 
 class GAN(nn.Module):
-    def __init__(self, train, lmbda1=1000, lmbda2 = 100):
+    def __init__(self, train, cuda_list, lmbda1=1000, lmbda2 = 100):
         super(GAN, self).__init__()
-        self.netG = nn.DataParallel(Generator().cuda(), [4, 5])
+        self.netG = nn.DataParallel(Generator().cuda(), cuda_list)
         if train:
-            self.netD = nn.DataParallel(Discriminator().cuda(), [4, 5])
+            self.netD = nn.DataParallel(Discriminator().cuda(), cuda_list)
             self.criterionD = GANloss(gan_mode="vanilla")
             self.criterionG = GANloss(gan_mode="vanilla")
             self.criterionL1 = nn.L1Loss()
