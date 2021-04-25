@@ -1,15 +1,15 @@
-.vscode
+# custom
+/data
+/dataset
+/save
 .idea
-data
-save
-beta
-/test_image
+runs
+trash
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-/.idea
 
 # C extensions
 *.so
