@@ -10,12 +10,12 @@ import torch.autograd as autograd
 import numpy as np
 
 class GAN(nn.Module):
-    def __init__(self, train, lmbda1=100, lmbda2 = 10):
+    def __init__(self, train, cuda_list, lmbda1=100, lmbda2 = 10):
         super(GAN, self).__init__()
-        self.netG = nn.DataParallel(Generator().cuda(), [2, 3])
+        self.netG = nn.DataParallel(Generator().cuda(), cuda_list)
         self.lambda_gp = 10
         if train:
-            self.netD = nn.DataParallel(Discriminator().cuda(), [2, 3])
+            self.netD = nn.DataParallel(Discriminator().cuda(), cuda_list)
             self.criterionL1 = nn.L1Loss()
             self.criterionPerc = Perc().cuda(2)
             self.optimizer_G = torch.optim.RMSprop(self.netG.parameters(), lr=0.0002)

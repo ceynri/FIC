@@ -7,11 +7,11 @@ from pytorch_msssim import ssim
 from perceptual_loss import Perc
 
 class GAN(nn.Module):
-    def __init__(self, train, lmbda1=100, lmbda2 = 10):
+    def __init__(self, train, cuda_list, lmbda1=100, lmbda2 = 10):
         super(GAN, self).__init__()
-        self.netG = nn.DataParallel(Generator(), [3])
+        self.netG = nn.DataParallel(Generator(), cuda_list)
         if train:
-            self.netD = nn.DataParallel(Discriminator(), [3])
+            self.netD = nn.DataParallel(Discriminator(), cuda_list)
             self.criterionD = GANloss(gan_mode="vanilla")
             self.criterionG = GANloss(gan_mode="vanilla")
             self.criterionL1 = nn.L1Loss()
