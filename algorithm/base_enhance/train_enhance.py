@@ -65,32 +65,31 @@ if __name__ == '__main__':
     )
 
     # FaceNet for extracting features
-    resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda(5)
-    resnet = nn.DataParallel(resnet, [5, 6])
+    resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda(1)
+    resnet = nn.DataParallel(resnet, [1, 7])
 
     # reconstruct face by feature
-    Base = DRcon().cuda(5)
-    Base = nn.DataParallel(Base, [5, 6])
+    Base = DRcon().cuda(1)
+    Base = nn.DataParallel(Base, [1, 7])
     # param = torch.load('/data/chenyangrui/save/base_layer.pth')
-    param = torch.load('/data/chenyangrui/cyr/30w/baseLayer_7.pth', map_location='cuda:1')
+    param = torch.load('/data/chenyangrui/cyr/base/30w/baseLayer_7.pth', map_location='cuda:1')
     Base.load_state_dict(param)
 
-    codec = AutoEncoder().cuda(5)
-    codec = CustomDataParallel(codec, [5, 6])
+    codec = AutoEncoder().cuda(1)
+    codec = CustomDataParallel(codec, [1, 7])
     optimizer, aux_optimizer = configure_optimizers(codec, lr=1e-3, aux_lr=1e-3)
-    criterion = RateDistortionLoss(lmbda=1024)
+    criterion = RateDistortionLoss(lmbda=2560)
     clip_max_norm = 1.0
     out_criterion = {}
     epoch = 0
 
-    writer = SummaryWriter(comment='_enhance_1024')
+    writer = SummaryWriter(comment='_gdn_2560')
 
-    # if isload:
-    #     checkpoint = torch.load('/data/chenyangrui/save/enhanceLayer_checkpoints')
-    #     codec.load_state_dict(checkpoint['model_state_dict'])
-    #     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    #     aux_optimizer.load_state_dict(checkpoint['aux_optimizer_state_dict'])
-    #     epoch = checkpoint['epoch']
+    checkpoint = torch.load('/data/chenyangrui/cyr/enhancement/2560/gdnmodel_checkpoints')
+    codec.load_state_dict(checkpoint['model_state_dict'])
+    # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    # aux_optimizer.load_state_dict(checkpoint['aux_optimizer_state_dict'])
+    epoch = checkpoint['epoch']
 
     print('start train')
     global_step = 0
@@ -99,13 +98,13 @@ if __name__ == '__main__':
         for i, d in enumerate(dl):
             # BaseLayer
             label = d
-            label = label.cuda(5)
+            label = label.cuda(1)
             feat = resnet(label)
             feat = torch.squeeze(feat, 1)
             feat = torch.unsqueeze(feat, 2)
             feat = torch.unsqueeze(feat, 3)
             # feat's shape is [N,512,1,1]
-            feat = feat.cuda(5)
+            feat = feat.cuda(1)
             data = Base(feat)
 
             aux_optimizer.zero_grad()
@@ -116,7 +115,7 @@ if __name__ == '__main__':
             Max = torch.max(resi)
             Min = torch.min(resi)
             tex_norm = (resi - Min) / (Max - Min)  # min-max normalization
-            tex_norm = tex_norm.cuda(5)
+            tex_norm = tex_norm.cuda(1)
             decoded = codec(tex_norm)
             x_hat = decoded['x_hat']
             recon = (Max - Min) * x_hat + Min
@@ -159,5 +158,5 @@ if __name__ == '__main__':
             'optimizer_state_dict': optimizer.state_dict(),
             'aux_optimizer_state_dict': aux_optimizer.state_dict(),
             'loss': out_criterion
-        }, '/data/chenyangrui/save/1024/enhanceLayer_checkpoints')
-        torch.save(codec.state_dict(), f'/data/chenyangrui/cyr/1024/enhanceLayer_{epoch}.pth')
+        }, '/data/chenyangrui/cyr/enhancement/2560/gdnmodel_checkpoints')
+        torch.save(codec.state_dict(), f'/data/chenyangrui/cyr/enhancement/2560/gdnmodel_{epoch}.pth')
