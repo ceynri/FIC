@@ -1,26 +1,34 @@
+import cv2
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from dataset import dataset, collate
-from torch.utils.data import DataLoader
-from endtoend import AutoEncoder
-from RateDistortionLoss import RateDistortionLoss
 from facenet_pytorch import InceptionResnetV1
-from DeepRcon import DRcon
-import cv2
+from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
+
+from dataset import collate, dataset
+from deconv_recon import DeconvRecon
+from gdn_model import GdnModel
+from rate_distortion_loss import RateDistortionLoss
+
+# config
+DATASET_DIR = 'path/to/your/dataset/dir'
+BASE_PARAM_PATH = 'path/to/your/base_param'
+LOAD_PATH = ''
+LAMBDA = 2560
+SAVE_DIR = f'path/to/your/save/dir/{LAMBDA}'
+CUDA_IDX = 0
+CUDA_LIST = [0]
 
 
 def configure_optimizers(net, lr, aux_lr):
     '''Separate parameters for the main optimizer and the auxiliary optimizer.
     Return two optimizers'''
 
-    parameters = set(
-        p for n, p in net.named_parameters() if not n.endswith('.quantiles')
-    )
-    aux_parameters = set(
-        p for n, p in net.named_parameters() if n.endswith('.quantiles')
-    )
+    parameters = set(p for n, p in net.named_parameters()
+                     if not n.endswith('.quantiles'))
+    aux_parameters = set(p for n, p in net.named_parameters()
+                         if n.endswith('.quantiles'))
 
     # Make sure we don't have an intersection of parameters
     params_dict = dict(net.named_parameters())
@@ -43,7 +51,6 @@ def configure_optimizers(net, lr, aux_lr):
 
 class CustomDataParallel(nn.DataParallel):
     '''Custom DataParallel to access the module methods.'''
-
     def __getattr__(self, key):
         try:
             return super().__getattr__(key)
@@ -53,58 +60,58 @@ class CustomDataParallel(nn.DataParallel):
 
 if __name__ == '__main__':
     cv2.ocl.setUseOpenCL(False)
-    ds = dataset('/data/chenyangrui/train')
-    dl = DataLoader(
-        dataset=ds,
-        num_workers=10,
-        batch_size=100,
-        shuffle=True,
-        drop_last=True,
-        pin_memory=True,
-        collate_fn = collate
-    )
+    ds = dataset(DATASET_DIR)
+    dl = DataLoader(dataset=ds,
+                    num_workers=10,
+                    batch_size=100,
+                    shuffle=True,
+                    drop_last=True,
+                    pin_memory=True,
+                    collate_fn=collate)
 
     # FaceNet for extracting features
-    resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda(1)
-    resnet = nn.DataParallel(resnet, [1, 7])
+    resnet = InceptionResnetV1(pretrained='vggface2').eval().cuda(CUDA_IDX)
+    resnet = nn.DataParallel(resnet, CUDA_LIST)
 
     # reconstruct face by feature
-    Base = DRcon().cuda(1)
-    Base = nn.DataParallel(Base, [1, 7])
-    # param = torch.load('/data/chenyangrui/save/base_layer.pth')
-    param = torch.load('/data/chenyangrui/cyr/base/30w/baseLayer_7.pth', map_location='cuda:1')
+    Base = DeconvRecon().cuda(CUDA_IDX)
+    Base = nn.DataParallel(Base, CUDA_LIST)
+    param = torch.load(BASE_PARAM_PATH, map_location='cuda:0')
     Base.load_state_dict(param)
 
-    codec = AutoEncoder().cuda(1)
-    codec = CustomDataParallel(codec, [1, 7])
-    optimizer, aux_optimizer = configure_optimizers(codec, lr=1e-3, aux_lr=1e-3)
-    criterion = RateDistortionLoss(lmbda=2560)
+    codec = GdnModel().cuda(CUDA_IDX)
+    codec = CustomDataParallel(codec, CUDA_LIST)
+    optimizer, aux_optimizer = configure_optimizers(codec,
+                                                    lr=1e-3,
+                                                    aux_lr=1e-3)
+    criterion = RateDistortionLoss(lmbda=LAMBDA)
     clip_max_norm = 1.0
     out_criterion = {}
     epoch = 0
 
-    writer = SummaryWriter(comment='_gdn_2560')
+    writer = SummaryWriter(comment=f'_gdn_model_{LAMBDA}')
 
-    checkpoint = torch.load('/data/chenyangrui/cyr/enhancement/2560/gdnmodel_checkpoints')
-    codec.load_state_dict(checkpoint['model_state_dict'])
-    # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    # aux_optimizer.load_state_dict(checkpoint['aux_optimizer_state_dict'])
-    epoch = checkpoint['epoch']
+    if LOAD_PATH:
+        checkpoint = torch.load(LOAD_PATH)
+        codec.load_state_dict(checkpoint['model_state_dict'])
+        # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        # aux_optimizer.load_state_dict(checkpoint['aux_optimizer_state_dict'])
+        epoch = checkpoint['epoch']
 
     print('start train')
     global_step = 0
-    while(epoch < 10):
+    while (epoch < 10):
         codec.train()
         for i, d in enumerate(dl):
             # BaseLayer
             label = d
-            label = label.cuda(1)
+            label = label.cuda(CUDA_IDX)
             feat = resnet(label)
             feat = torch.squeeze(feat, 1)
             feat = torch.unsqueeze(feat, 2)
             feat = torch.unsqueeze(feat, 3)
             # feat's shape is [N,512,1,1]
-            feat = feat.cuda(1)
+            feat = feat.cuda(CUDA_IDX)
             data = Base(feat)
 
             aux_optimizer.zero_grad()
@@ -115,7 +122,7 @@ if __name__ == '__main__':
             Max = torch.max(resi)
             Min = torch.min(resi)
             tex_norm = (resi - Min) / (Max - Min)  # min-max normalization
-            tex_norm = tex_norm.cuda(1)
+            tex_norm = tex_norm.cuda(CUDA_IDX)
             decoded = codec(tex_norm)
             x_hat = decoded['x_hat']
             recon = (Max - Min) * x_hat + Min
@@ -124,13 +131,14 @@ if __name__ == '__main__':
             out_criterion['loss'].backward()
 
             if clip_max_norm > 0:
-                torch.nn.utils.clip_grad_norm_(codec.parameters(), clip_max_norm)
+                torch.nn.utils.clip_grad_norm_(codec.parameters(),
+                                               clip_max_norm)
             optimizer.step()
 
             aux_loss = codec.aux_loss()
             aux_loss.backward()
             aux_optimizer.step()
-            
+
             # 记录loss
             loss = out_criterion["loss"].item()
             mse_loss = out_criterion["mse_loss"].item()
@@ -143,20 +151,19 @@ if __name__ == '__main__':
             global_step += 1
 
             if i % 10 == 0:
-                print(
-                    f'Epoch {epoch}, batch {i}\t| '
-                    f'Loss: {loss:.3f}\t| '
-                    f'MSE loss: {mse_loss:.5f}\t| '
-                    f'Bpp loss: {bpp_loss:.4f}\t| '
-                    f'Aux loss: {aux_loss:.2f}'
-                )
+                print(f'Epoch {epoch}, batch {i}\t| '
+                      f'Loss: {loss:.3f}\t| '
+                      f'MSE loss: {mse_loss:.5f}\t| '
+                      f'Bpp loss: {bpp_loss:.4f}\t| '
+                      f'Aux loss: {aux_loss:.2f}')
 
         epoch += 1
-        torch.save({
-            'epoch': epoch,
-            'model_state_dict': codec.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'aux_optimizer_state_dict': aux_optimizer.state_dict(),
-            'loss': out_criterion
-        }, '/data/chenyangrui/cyr/enhancement/2560/gdnmodel_checkpoints')
-        torch.save(codec.state_dict(), f'/data/chenyangrui/cyr/enhancement/2560/gdnmodel_{epoch}.pth')
+        torch.save(
+            {
+                'epoch': epoch,
+                'model_state_dict': codec.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'aux_optimizer_state_dict': aux_optimizer.state_dict(),
+                'loss': out_criterion
+            }, f'{SAVE_DIR}/gdn_model_checkpoints')
+        torch.save(codec.state_dict(), f'{SAVE_DIR}/gdn_model_{epoch}.pth')

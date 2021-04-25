@@ -2,7 +2,7 @@ from analysis import Analysis
 from synthesis import Synthesis
 from compressai.models import CompressionModel
 
-class AutoEncoder(CompressionModel):
+class GdnModel(CompressionModel):
     def __init__(self, N=128):
         super().__init__(entropy_bottleneck_channels=N)
 
