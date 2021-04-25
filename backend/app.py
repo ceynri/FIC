@@ -162,6 +162,8 @@ def demo_process():
 def compress():
     '''批量压缩图片并返回压缩结果'''
 
+    if model.quality_level != 'medium':
+        model.switch_quality_level('medium')
     # 获取文件对象
     files = request.files.getlist('files')
     ret = []
@@ -169,8 +171,8 @@ def compress():
         file = File(rawfile)
         # 将二进制转为tensor
         input = file.load_tensor().cuda()
-        with torch.no_grad():
-            data = model.encode(input)
+
+        data = model.encode(input)
 
         # 保存压缩数据
         fic_name = f'{file.name}.fic'
@@ -208,6 +210,8 @@ def compress():
 def decompress():
     '''批量解压fic文件并返回解压后的图片'''
 
+    if model.quality_level != 'medium':
+        model.switch_quality_level('medium')
     # 获取文件对象
     files = request.files.getlist('files')
     ret = []
