@@ -1,4 +1,6 @@
+import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 class Discriminator(nn.Module):
     def __init__(self):
@@ -47,4 +49,4 @@ class Discriminator(nn.Module):
         x = self.conv7(x)
         x = self.conv8(x)
 
-        return x
+        return torch.sigmoid(x)

@@ -4,6 +4,7 @@ from  dataset import dataset
 from torch.utils.data.dataloader import default_collate
 from network import GAN
 import cv2
+from tensorboardX import SummaryWriter
 
 
 def collate(batch):
@@ -21,7 +22,7 @@ if __name__ == '__main__':
     ds = DataLoader(
         dataset=dataset,
         num_workers=10,
-        batch_size=80,
+        batch_size=40,
         shuffle=True,
         drop_last=True,
         pin_memory=True,
@@ -29,14 +30,30 @@ if __name__ == '__main__':
     )
     net = GAN(train=True).cuda(2)
     epoch = 0
+    total_it = 0
+    # writer = SummaryWriter('/data/chenyangrui/resnetGan/tsb')
+    load = False
+    if load:
+        param = torch.load('/data/chenyangrui/resnetGan/resnetGan_checkpoints.pth')
+        epoch = param['epoch']
+        net.load_state_dict(param['model_state_dict'])
+        total_it = param['total_it']
 
     print("start train")
-    while(epoch < 30):
+    while(epoch < 100):
         net.train()
         for i, d in enumerate(ds):
+            total_it += 1
             d = d.cuda(2)
             x_out = net(d)
-            net.optimize_parameters()
+            net.optimize_parameters(i, total_it, writer)
+
+            writer.add_scalar('loss_G', net.loss_G.item(), total_it)
+            writer.add_scalar('ssim_loss', net.ssim_loss.item(), total_it)
+            writer.add_scalar('G_GAN_loss', net.loss_G_GAN.item(), total_it)
+            writer.add_scalar('G_L1_loss', net.loss_G_L1.item(), total_it)
+            writer.add_scalar('D_loss', net.loss_D.item(), total_it)
+            writer.add_scalar('perc_loss', net.perc_loss.item(), total_it)
 
             if i % 10 == 0:
                 print(
@@ -45,6 +62,7 @@ if __name__ == '__main__':
                     f'\tssim_loss: {net.ssim_loss:.6f} |'
                     f"\tG_GAN_loss: {net.loss_G_GAN.item():.6f} |"
                     f"\tG_L1_loss: {net.loss_G_L1.item():.6f} |"
+                    f"\tG_perc_loss: {net.perc_loss.item():.6f} |"
                     f'\tD_loss: {net.loss_D.item():.6f} |'
                 )
         epoch += 1
@@ -54,8 +72,9 @@ if __name__ == '__main__':
             'G_optimizer_state_dict': net.optimizer_G.state_dict(),
             'D_optimizer_state_dict': net.optimizer_D.state_dict(),
             'G_loss': net.loss_G,
-            'D_loss': net.loss_D
-        }, '/data/chenyangrui/save/BaseLayer_perc_checkpoints')
-        torch.save(net.state_dict(), f"/data/chenyangrui/save/BaseLayer_perc_{epoch}.pth")
+            'D_loss': net.loss_D,
+            'total_it': total_it
+        }, '/data/chenyangrui/resnetGan/resnetGan_checkpoints')
+        torch.save(net.state_dict(), f"/data/chenyangrui/resnetGan/resnetGan_{epoch}.pth")
 
 

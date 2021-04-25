@@ -10,7 +10,7 @@ class dataset(Dataset):
     def __init__(self, path):
         self.path = Path(path)
         self.image_files = []
-        self.crop = Cropper()
+        self.crop = Cropper(face_percent=100)
         self.transform = transforms.Compose([
             transforms.Resize((256, 256)),
             transforms.ToTensor()
@@ -20,6 +20,7 @@ class dataset(Dataset):
         for pdir in track(list(self.path.glob('*/*.jpg'))):
             # use path index image
             self.image_files.append(str(pdir))
+        self.image_files = self.image_files[:30000]
         print('finish loading')
 
     def __len__(self):

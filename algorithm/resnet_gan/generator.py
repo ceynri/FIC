@@ -1,6 +1,7 @@
 import torch.nn as nn
 from encoder import Encoder
 from decoder import Decoder
+import torch
 
 class Generator(nn.Module):
     def __init__(self):
@@ -9,7 +10,9 @@ class Generator(nn.Module):
         self.decoder = Decoder()
 
     def forward(self, x):
-        x = self.encoder(x)
+        bottleneck = self.encoder(x)
+        x = torch.squeeze(bottleneck, 1)
+        x = torch.unsqueeze(x, 2)
+        x = torch.unsqueeze(x, 3)
         x = self.decoder(x)
-
-        return x
+        return bottleneck, x
