@@ -6,7 +6,7 @@ module.exports = {
       // 模板来源
       template: 'public/index.html',
       // 网页标题
-      title: 'FIC - facial image compression tool base on deep learning',
+      title: 'FIC - facial image compression tool based on deep learning',
     },
   },
   devServer: {

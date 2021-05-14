@@ -7,11 +7,11 @@
       <div class="setting_item">
         <div class="setting_name">Feature model</div>
         <div class="setting_value_wrapper">
-          <label class="setting_value">
+          <label class="setting_value clickable">
             <input type="radio" v-model="value.featureModel" value="facenet" />
             FaceNet
           </label>
-          <label class="setting_value">
+          <label class="setting_value clickable">
             <input type="radio" v-model="value.featureModel" value="gan" />
             GAN
           </label>
@@ -20,15 +20,15 @@
       <div class="setting_item">
         <div class="setting_name">Quality level</div>
         <div class="setting_value_wrapper">
-          <label class="setting_value">
+          <label class="setting_value clickable">
             <input type="radio" v-model="value.qualityLevel" value="low" />
             Low
           </label>
-          <label class="setting_value">
+          <label class="setting_value clickable">
             <input type="radio" v-model="value.qualityLevel" value="medium" />
             Medium
           </label>
-          <label class="setting_value">
+          <label class="setting_value clickable">
             <input type="radio" v-model="value.qualityLevel" value="high" />
             High
           </label>

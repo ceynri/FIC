@@ -30,8 +30,8 @@
           </div>
           <div class="image_info">
             <div>{{ data.eval.tex_bpp.toFixed(3) }} bpp</div>
-            <div>{{ data.size.tex }} bytes (texture size)</div>
-            <div>{{ data.size.feat }} bytes (feature size)</div>
+            <div>{{ data.size.tex }} bytes<!-- (texture size)--></div>
+            <!-- <div>{{ data.size.feat }} bytes (feature size)</div> -->
             <div>PSNR {{ data.eval.fic_psnr.toFixed(2) }}</div>
             <div>SSIM {{ data.eval.fic_ssim.toFixed(6) }}</div>
           </div>

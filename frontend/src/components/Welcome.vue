@@ -4,8 +4,7 @@
       <section class="intro_section">
         <h1 class="title">Facial Image Compression Tool</h1>
         <div class="intro">
-          This is an online compression tool specially optimized for facial images based on deep
-          learning.
+          This is an online tool dedicated to facical image compression based on deep learning.
         </div>
         <div class="btn_container">
           <router-link class="try_btn btn" to="demo">Try now!</router-link>
