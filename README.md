@@ -4,13 +4,13 @@
 </div>
 <br/>
 
-![首页.jpeg](https://i.loli.net/2021/04/25/yLnx6zAdNuQ12Vv.jpg)
+![首页.jpeg](https://pics-1259634345.file.myqcloud.com/yLnx6zAdNuQ12Vv.jpg)
 
 针对需要同时存储人脸特征与人脸原图的应用场景，本项目设计了一套基于基于深度特征辅助的人脸图像压缩系统，在支持使用人脸特征完成人脸识别等下游任务的同时，在图像压缩方面取得了优于 JPEG 压缩原图的效果。
 
 算法模型架构基于 Shurun Wang 等人于 2019 IEEE 提出的论文 [Scalable Facial Image Compression with Deep Feature Reconstruction](https://arxiv.org/abs/1903.05921v1) 进行复现。
 
-![SFIC.png](https://i.loli.net/2021/04/25/QxH8FuXUNclDSWG.png)
+![SFIC.png](https://pics-1259634345.file.myqcloud.com/QxH8FuXUNclDSWG.png)
 
 本系统基于该算法模型搭建一整套前后端应用，具备通过互联网提供算法服务的能力。
 
@@ -22,7 +22,7 @@
 
 另外需要 Nginx 进行静态资源代理以及后端服务的反向代理实现部署
 
-![人脸图像压缩系统.png](https://i.loli.net/2021/04/25/Q7RGkOuJgHcrXK6.png)
+![人脸图像压缩系统.png](https://pics-1259634345.file.myqcloud.com/Q7RGkOuJgHcrXK6.png)
 
 > 子模块结构与文件的对应关系请参考各个子模块根目录下的 README 文件
 
@@ -44,17 +44,17 @@
 
 对于面向人脸识别等任务的人脸特征进行重建的效果：
 
-![人脸重建.png](https://i.loli.net/2021/04/25/xYVXzgZrqfk7Fod.png)
+![人脸重建.png](https://pics-1259634345.file.myqcloud.com/xYVXzgZrqfk7Fod.png)
 
 压缩过程例图：
 
-![压缩过程与效果样例.jpg](https://i.loli.net/2021/04/25/UTsaFg2ZMqD9emh.jpg)
+![压缩过程与效果样例.jpg](https://pics-1259634345.file.myqcloud.com/UTsaFg2ZMqD9emh.jpg)
 
 深度学习方法与 JPEG 方法在相近 bpp 条件下的 PSNR 比较：
 
-![lambda对比.jpg](https://i.loli.net/2021/04/25/2xAvZW5UCQJt1hI.jpg)
+![lambda对比.jpg](https://pics-1259634345.file.myqcloud.com/2xAvZW5UCQJt1hI.jpg)
 
-![bpp-psnr.png](https://i.loli.net/2021/04/25/qjHrkiDsOGTmBAd.png)
+![bpp-psnr.png](https://pics-1259634345.file.myqcloud.com/qjHrkiDsOGTmBAd.png)
 
 ### 前端交互演示
 
@@ -62,15 +62,15 @@
 
 鼠标放置于图片上时，会展示原始图像
 
-![Demo.gif](https://i.loli.net/2021/04/25/JLnKvudAbNj8qc3.gif)
+![Demo.gif](https://pics-1259634345.file.myqcloud.com/JLnKvudAbNj8qc3.gif)
 
 图像压缩页：文件上传 -> 下载结果
 
-![Compress.gif](https://i.loli.net/2021/04/25/zisRAS1b7JnahHy.gif)
+![Compress.gif](https://pics-1259634345.file.myqcloud.com/zisRAS1b7JnahHy.gif)
 
 图像解压页：上传压缩文件 -> 下载还原图
 
-![Decompress.gif](https://i.loli.net/2021/04/25/ndytTNa5xvDJosL.gif)
+![Decompress.gif](https://pics-1259634345.file.myqcloud.com/ndytTNa5xvDJosL.gif)
 
 ## 其他
 
