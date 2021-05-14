@@ -1,5 +1,5 @@
 <div style="text-align: center">
-<h1>FIC - Facial Image Compression Application</h1>
+<h1>FIC - Facial Image Compression System</h1>
 <div>基于深度特征辅助的人脸图像压缩系统应用</div>
 </div>
 <br/>
