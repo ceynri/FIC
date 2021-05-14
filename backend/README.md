@@ -13,6 +13,32 @@
 └── dev.sh      以debug模式启动服务脚本（仅linux有效）
 ```
 
+## 运行环境
+
+> 配置与版本并非强制要求，具体以实际情况为准
+
+### 环境配置
+
+- win10、linux (manjaro) 均测试部署过
+- python 3.8
+- cuda 11.1
+- 显卡显存 4GB 以上为佳
+
+### 相关依赖
+
+> 仅列部分，可以补充
+
+- flask 1.1.2
+- gevent 20.9.0
+- pytorch 1.8.1
+- torchvision 0.9.1
+- compressai 1.1.2
+- autocrop
+- numpy
+- skimage
+- facenet_pytorch
+- pickle
+
 ## 启动服务
 
 - `python app.py` 直接启动服务
