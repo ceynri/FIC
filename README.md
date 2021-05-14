@@ -74,4 +74,4 @@
 
 ## 其他
 
-- [深度学习算法服务的搭建与部署教程](deployment-guide.md)
+- [深度学习算法服务的搭建与部署教程](deployment-tutorial.md)
