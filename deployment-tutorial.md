@@ -24,23 +24,23 @@ date: 2021-04-12
 
 用户访问网站时，会请求服务器的对应的网页文件。Nginx 收到请求后，分析路由规则，找到指定目录下的文件并返回给用户。
 
-![请求网页.png](https://pics-1259634345.file.myqcloud.com/AKWnOcv5fl1RCuk.png)
+![请求网页.png](https://static.ceynri.cn/AKWnOcv5fl1RCuk.png)
 
 一个例子：
 
-![请求网页例子.png](https://pics-1259634345.file.myqcloud.com/jTChRVMIFA6yOce.png)
+![请求网页例子.png](https://static.ceynri.cn/jTChRVMIFA6yOce.png)
 
 ### 接口请求
 
 当用户点击网页上的特定按钮时（例如上传图片执行压缩的功能），会发起 POST 请求，携带上传文件（如果有）请求指定的接口。Nginx 收到请求后，分析匹配到路由规则为“代理转发”，则直接将请求转发给 Flask 服务。
 
-![请求算法接口.png](https://pics-1259634345.file.myqcloud.com/qVFvaOnuoH4NDbr.png)
+![请求算法接口.png](https://static.ceynri.cn/qVFvaOnuoH4NDbr.png)
 
 可以看出 Flask 服务并没有直接与用户请求通信，中间加了一层 Nginx 作为代理。
 
 一个例子：
 
-![请求算法接口例子.png](https://pics-1259634345.file.myqcloud.com/SDXuygwiNZV6L1z.png)
+![请求算法接口例子.png](https://static.ceynri.cn/SDXuygwiNZV6L1z.png)
 
 ## 部署配置
 
