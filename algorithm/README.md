@@ -31,6 +31,28 @@
 
 VGGFace2
 
+# 网络结构
+
+## 原论文框架
+
+[![origin.png](https://z3.ax1x.com/2021/05/19/g5Hu7T.md.png)](https://imgtu.com/i/g5Hu7T)
+
+ Shurun Wang 等人于 2019 IEEE 提出的论文 [Scalable Facial Image Compression with Deep Feature Reconstruction](https://arxiv.org/abs/1903.05921v1)
+
+## 基于GAN的人脸重建网络
+
+[![GAN.png](https://z3.ax1x.com/2021/05/19/g5Hcut.md.png)](https://imgtu.com/i/g5Hcut)
+
+$$Loss=\lambda_{M}MAE(I_G,I)+\lambda_{S}SSIM(I_G,I)+\lambda_{G}L_{GAN}$$
+
+## 改进方案
+
+
+
+[![improved.png](https://z3.ax1x.com/2021/05/19/g5HI3j.md.png)](https://imgtu.com/i/g5HI3j)
+
+$$Loss=\lambda_{M}MAE(I_G,I)+\lambda_{S}SSIM(I_G,I)+\lambda_{G}L_{GAN}+\lambda_PMSE(F(I),G(I))$$
+
 ## 预训练模型
 
 见 [Github releases](https://github.com/ceynri/FIC/releases)
